@@ -6,7 +6,7 @@ import subprocess
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 # path ke folder utilitas STT
-WHISPER_DIR = os.path.join(BASE_DIR, "..", "..", "whisper", "whisper.cpp")
+WHISPER_DIR = os.path.join(BASE_DIR , "..", "whisper", "whisper.cpp")
 
 # TODO: Lengkapi path ke binary whisper-cli
 # Gunakan os.path.join() untuk menggabungkan WHISPER_DIR, "build", "bin", dan "whisper-cli"

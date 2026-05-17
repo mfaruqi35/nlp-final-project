@@ -35,8 +35,8 @@ with gr.Blocks() as demo:
         with gr.Column():
             audio_input = gr.Audio(sources="microphone", type="numpy", label = "Rekam Pertanyaan Anda")
             mode_input = gr.Dropdown(
-                choices=["normalize", "preserve"]
-                value="normalize"
+                choices=["normalize", "preserve"],
+                value="normalize",
                 label="Mode Respons"
             ) 
             submit_btn = gr.Button("Submit")
@@ -49,4 +49,4 @@ with gr.Blocks() as demo:
             outputs=audio_output
         )
 
-demo.lauch()
+demo.launch()

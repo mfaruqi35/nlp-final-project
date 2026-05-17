@@ -3,11 +3,11 @@ import json
 import uuid
 from datetime import datetime
 from fastapi import FastAPI, UploadFile, File, Form
-from fastapi.response import FileResponse
+from fastapi.responses import FileResponse
 
-from stt import transcribe_speech_to_text
-from tts import transcribe_text_to_speech
-from llm import generate_response
+from app.stt import transcribe_speech_to_text
+from app.tts import transcribe_text_to_speech
+from app.llm import generate_response
 
 app = FastAPI()
 
@@ -21,7 +21,7 @@ async def voice_chat(
     mode: str = Form(default="normalize")
 ):
     file_bytes = await file.read()
-    file_ext = os.path.splittext(file.filename)[-1] or ".wav"
+    file_ext = os.path.splitext(file.filename)[-1] or ".wav"
 
     #STT
     transcript = transcribe_speech_to_text(file_bytes, file_ext)

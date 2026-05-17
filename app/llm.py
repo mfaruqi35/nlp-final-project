@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-MODEL = "gemini-2.0-flash"
+MODEL = "gemma-4-26b-a4b-it"
 
 GOOGLE_API_KEY = os.getenv("GEMINI_API_KEY")
 
