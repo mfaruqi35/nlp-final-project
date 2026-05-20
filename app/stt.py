@@ -39,7 +39,7 @@ def transcribe_speech_to_text(file_bytes: bytes, file_ext: str = ".wav") -> str:
             "-m", WHISPER_MODEL_PATH,
             "-f", audio_path,
             "-otxt",
-            "-of", os.path.join(tmpdir, "..", "transcription")
+            "-of", os.path.join(tmpdir, "transcription")
         ]
 
         try:
