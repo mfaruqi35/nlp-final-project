@@ -93,7 +93,7 @@ def run_pipeline(audio_path, mode):
 def main():
     reference = load_reference()
     audio_files = sorted([
-        f for f in os.listdir(AUDIO_DIR) if f.endswith(".wav") and f.startswith("2362_")
+        f for f in os.listdir(AUDIO_DIR) if f.endswith(".wav")
     ])
 
     results = load_checkpoint()
@@ -166,15 +166,14 @@ def main():
                         "total_latency": result["total_latency"]
                     })
                     save_checkpoint(results)
+                    success = True
 
                 except Exception as e:
                     if str(e) == "LLM_500_ERROR":
                         print(f"  [!] Terdeteksi Error 500, menunggu 30 detik...")
-                        time.sleep(30) # Istirahat saat error
-                        # JANGAN save ke results/checkpoint agar file ini tetap masuk antrean berikutnya
+                        time.sleep(30)
                     else:
                         print(f"  [ERROR] {e}")
-                        # Jika error sistem lain, baru kita catat sebagai error
                         results.append({"filename": filename, "mode": mode, "error": str(e)})
                         save_checkpoint(results)
                         success = True
