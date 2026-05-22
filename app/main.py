@@ -28,6 +28,9 @@ async def voice_chat(
 
     #LLM
     response_text = generate_response(transcript, mode)
+    if "[ERROR]" in response_text or "500 INTERNAL" in response_text:
+        response_text = "Mohon maaf, server kecerdasan buatan sedang sibuk. Silakan coba beberapa saat lagi."
+    # ---------------------------------
 
     #TTS
     audio_path = transcribe_text_to_speech(response_text)

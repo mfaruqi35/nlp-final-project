@@ -1,47 +1,43 @@
 import os
 import tempfile
+import uuid 
 import requests
 import gradio as gr
-import scipy.io.wavfile
 
-def voice_chat(audio, mode):
-    if audio is None:
+def voice_chat(audio_path, mode):
+    if audio_path is None:
         return None
     
-    sr, audio_data = audio
-
-    with tempfile.NamedTemporaryFile(delete=False, suffix=".wav") as tmpfile:
-        scipy.io.wavfile.write(tmpfile.name, sr,audio_data)
-        audio_path = tmpfile.name
-
     with open(audio_path, "rb") as f:
         files = {"file": ("voice.wav", f, "audio/wav")}
         data = {"mode": mode}
-        response = requests.post("http://localhost:8000/voice-chat", files=files, data=data)
+        response = requests.post("http://localhost:8000/voice-chat", files=files, data=data, timeout=180)
 
     if response.status_code == 200:
-        output_audio_path = os.path.join(tempfile.gettempdir(), "tts_output.wav")
+        unique_filename = f"tts_output_{uuid.uuid4()}.wav"
+        output_audio_path = os.path.join(tempfile.gettempdir(), unique_filename)
+        
         with open(output_audio_path, "wb") as f:
             f.write(response.content)
         return output_audio_path
     else:
+        print(f"Error dari backend: {response.status_code} - {response.text}")
         return None
 
 with gr.Blocks() as demo:
     gr.Markdown("# Voice Chatbot")
-    gr.Markdown("Berbicara langsung ke mikrofon dan dapatkan jawaban usra dari asisten AI.")
+    gr.Markdown("Berbicara langsung ke mikrofon dan dapatkan jawaban suara dari asisten AI.")
 
     with gr.Row():
         with gr.Column():
-            audio_input = gr.Audio(sources="microphone", type="numpy", label = "Rekam Pertanyaan Anda")
+            audio_input = gr.Audio(sources=["microphone"], type="filepath", format="wav", label="Rekam Pertanyaan Anda")
             mode_input = gr.Dropdown(
                 choices=["normalize", "preserve"],
                 value="normalize",
                 label="Mode Respons"
             ) 
             submit_btn = gr.Button("Submit")
-            with gr.Column():
-                audio_output = gr.Audio(type="filepath", label="Balasan dari Asisten")
+            audio_output = gr.Audio(type="filepath", label="Balasan dari Asisten")
 
         submit_btn.click(
             fn=voice_chat,

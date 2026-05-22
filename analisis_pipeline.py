@@ -12,7 +12,19 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 AUDIO_DIR = os.path.join(BASE_DIR, "data", "corpus", "audio")
 REFERENCE_FILE = os.path.join(BASE_DIR, "data", "corpus", "transcripts", "reference.json")
 RESULTS_DIR = os.path.join(BASE_DIR, "data", "results")
+CHECKPOINT_FILE = os.path.join(RESULTS_DIR, "checkpoint.json")
 os.makedirs(RESULTS_DIR, exist_ok=True)
+
+def load_checkpoint():
+    if os.path.exists(CHECKPOINT_FILE):
+        with open(CHECKPOINT_FILE, "r", encoding="utf-8") as f:
+            return json.load(f)
+    return []
+
+def save_checkpoint(results):
+    with open(CHECKPOINT_FILE, "w", encoding="utf-8") as f:
+        json.dump(results, f, ensure_ascii=False, indent=2)    
+
 
 def load_reference():
     with open(REFERENCE_FILE, "r", encoding="utf-8") as f:
@@ -39,6 +51,7 @@ def run_pipeline(audio_path, mode):
 
     # LLM
     t1 = time.time()
+    time.sleep(15)
     response_text = generate_response(transcript, mode)
     llm_latency = time.time() - t1
 
@@ -65,7 +78,8 @@ def main():
         f for f in os.listdir(AUDIO_DIR) if f.endswith(".wav")
     ])
 
-    results = []
+    results = load_checkpoint()
+    processed = set((r["filename"], r["mode"]) for r in results if "error" not in r or r.get("transcript"))
     wer_scores = []
     cer_scores = []
 

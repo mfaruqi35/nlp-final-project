@@ -16,9 +16,37 @@ COQUI_MODEL_PATH = os.path.join(COQUI_DIR, "checkpoint_1260000-inference.pth")
 # File config.json harus berada di dalam folder coqui_utils/
 COQUI_CONFIG_PATH = os.path.join(COQUI_DIR, "config.json")
 
+COQUI_SPEAKERS_PATH = os.path.join(COQUI_DIR, "speakers.pth")
+
 # TODO: Tentukan nama speaker yang digunakan
 # Pilih nama speaker yang sesuai dengan isi file speakers.pth (misalnya: "wibowo")
 COQUI_SPEAKER = "wibowo"
+
+
+def _grapheme_to_phoneme(text: str) -> str:
+    """
+    Mengonversi huruf alfabet biasa menjadi simbol fonetik (IPA) 
+    agar dikenali oleh vocabulary model Indonesian-TTS.
+    """
+    text = text.lower()
+    
+    # Mapping fonem dasar
+    mapping = {
+        'v': 'f',
+        'ng': 'ŋ',
+        'ny': 'ɲ',
+        'sy': 'ʃ',
+        'kh': 'x',
+        'c': 'tʃ',
+        'y': 'j',   
+        'g': 'ɡ',  
+        'j': 'dʒ'
+    }
+    
+    for grapheme, phoneme in mapping.items():
+        text = text.replace(grapheme, phoneme)
+        
+    return text
 
 def transcribe_text_to_speech(text: str) -> str:
     """
@@ -28,7 +56,9 @@ def transcribe_text_to_speech(text: str) -> str:
     Returns:
         str: Path ke file audio hasil konversi.
     """
-    path = _tts_with_coqui(text)
+
+    phonemic_text = _grapheme_to_phoneme(text)
+    path = _tts_with_coqui(phonemic_text)
     return path
 
 # === ENGINE 1: Coqui TTS ===
@@ -43,6 +73,7 @@ def _tts_with_coqui(text: str) -> str:
         "--model_path", COQUI_MODEL_PATH,
         "--config_path", COQUI_CONFIG_PATH,
         "--speaker_idx", COQUI_SPEAKER,
+        "--speakers_file_path", COQUI_SPEAKERS_PATH,
         "--out_path", output_path
     ]
     
