@@ -59,9 +59,6 @@ def _grapheme_to_phoneme(text: str) -> str:
         
     return text
 
-def _normalize_tts_text(text: str) -> str:
-    
-    return text
 
 def transcribe_text_to_speech(text: str) -> str:
     """
@@ -77,6 +74,8 @@ def transcribe_text_to_speech(text: str) -> str:
     normalized_text = _normalize_tts_text(text)
     phonemic_text = _grapheme_to_phoneme(normalized_text)
     path = _tts_with_coqui(phonemic_text)
+
+    return path
 
 # === ENGINE 1: Coqui TTS ===
 def _tts_with_coqui(text: str) -> str:

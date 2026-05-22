@@ -5,6 +5,7 @@ from datetime import datetime
 from jiwer import wer, cer
 import gc
 import re
+import shutil
 
 from app.stt import transcribe_speech_to_text
 from app.llm import generate_response
@@ -15,8 +16,11 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 AUDIO_DIR = os.path.join(BASE_DIR, "data", "corpus", "audio_fixed")
 REFERENCE_FILE = os.path.join(BASE_DIR, "data", "corpus", "transcripts", "reference.json")
 RESULTS_DIR = os.path.join(BASE_DIR, "data", "results")
+
+AUDIO_OUT_DIR = os.path.join(RESULTS_DIR, "audio_output")
 CHECKPOINT_FILE = os.path.join(RESULTS_DIR, "checkpoint.json")
 os.makedirs(RESULTS_DIR, exist_ok=True)
+os.makedirs(AUDIO_OUT_DIR, exist_ok=True)
 
 # Preprocessing hasil transkrip whisper
 def clean_text(text):
@@ -45,6 +49,7 @@ def load_reference():
 
 # Mengambil id ujaran
 def get_utterance_id(filename):
+    filename = filename.lower()
     parts = os.path.splitext(filename)[0].split("_")
     if len(parts) >= 2:
         raw_id = parts[1]
@@ -130,6 +135,19 @@ def main():
                     print(f"  LLM latency: {result['llm_latency']}s")
                     print(f"  TTS latency: {result['tts_latency']}s")
                     print(f"  Total latency: {result['total_latency']}s")
+
+                    temp_audio_path = result["audio_output"]
+                    if os.path.exists(temp_audio_path):
+                        # Buat nama file rapi, misal: 2362_audio01_normalize.wav
+                        new_audio_name = f"{os.path.splitext(filename)[0]}_{mode}.wav"
+                        permanent_audio_path = os.path.join(AUDIO_OUT_DIR, new_audio_name)
+                        
+                        # Copy dari folder Temp ke folder data/results/audio_output
+                        shutil.copy(temp_audio_path, permanent_audio_path)
+                        
+                        # Timpa path lama dengan path baru agar JSON mencatat path permanen
+                        result["audio_output"] = permanent_audio_path
+                        print(f"  Audio saved to: {permanent_audio_path}")
 
                     if ref_text:
                         clean_ref = clean_text(ref_text)
