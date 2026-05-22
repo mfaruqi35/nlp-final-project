@@ -3,33 +3,47 @@ import json
 import time
 from datetime import datetime
 from jiwer import wer, cer
+import gc
+import re
 
 from app.stt import transcribe_speech_to_text
 from app.llm import generate_response
 from app.tts import transcribe_text_to_speech
 
+
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-AUDIO_DIR = os.path.join(BASE_DIR, "data", "corpus", "audio")
+AUDIO_DIR = os.path.join(BASE_DIR, "data", "corpus", "audio_fixed")
 REFERENCE_FILE = os.path.join(BASE_DIR, "data", "corpus", "transcripts", "reference.json")
 RESULTS_DIR = os.path.join(BASE_DIR, "data", "results")
 CHECKPOINT_FILE = os.path.join(RESULTS_DIR, "checkpoint.json")
 os.makedirs(RESULTS_DIR, exist_ok=True)
 
+# Preprocessing hasil transkrip whisper
+def clean_text(text):
+    text = text.lower()
+    text = re.sub(r'[^\w\s]', '', text)
+    text = re.sub(r'\s+', ' ', text).strip()
+
+    return text
+
+# Checkpoint agar progres tidak ulang dari awal saat program dihentikan tengah jalan
 def load_checkpoint():
     if os.path.exists(CHECKPOINT_FILE):
         with open(CHECKPOINT_FILE, "r", encoding="utf-8") as f:
             return json.load(f)
     return []
 
+# Menyimpan checkpoint
 def save_checkpoint(results):
     with open(CHECKPOINT_FILE, "w", encoding="utf-8") as f:
         json.dump(results, f, ensure_ascii=False, indent=2)    
 
-
+# Load referensi naskah untuk menghitung WER dan CER
 def load_reference():
     with open(REFERENCE_FILE, "r", encoding="utf-8") as f:
         return json.load(f)
 
+# Mengambil id ujaran
 def get_utterance_id(filename):
     parts = os.path.splitext(filename)[0].split("_")
     if len(parts) >= 2:
@@ -55,10 +69,14 @@ def run_pipeline(audio_path, mode):
     response_text = generate_response(transcript, mode)
     llm_latency = time.time() - t1
 
-    # TTS
-    t2 = time.time()
-    audio_output = transcribe_text_to_speech(response_text)
-    tts_latency = time.time() - t2
+    if "[ERROR]" in response_text or "500" in response_text:
+        print(" [INFO] LLM error detected, skipping TTS syntehsis")
+        raise Exception("LLM_500_ERROR")
+
+    else:
+        t2 = time.time()
+        audio_output = transcribe_text_to_speech(response_text)
+        tts_latency = time.time() - t2
 
     total_latency = time.time() - t0
 
@@ -75,7 +93,7 @@ def run_pipeline(audio_path, mode):
 def main():
     reference = load_reference()
     audio_files = sorted([
-        f for f in os.listdir(AUDIO_DIR) if f.endswith(".wav")
+        f for f in os.listdir(AUDIO_DIR) if f.endswith(".wav") and f.startswith("2362_")
     ])
 
     results = load_checkpoint()
@@ -96,54 +114,70 @@ def main():
         print(f"Reference: {ref_text}")
 
         for mode in ["normalize", "preserve"]:
+            if(filename, mode) in processed:
+                print(f" Mode: {mode} - skipped (already preprocessed)")
+                continue
             print(f"\n  Mode: {mode}")
-            try:
-                result = run_pipeline(audio_path, mode)
+            success = False
+            while not success:
+                try:
+                    result = run_pipeline(audio_path, mode)
 
-                transcript = result["transcript"]
-                print(f"  Transcript: {transcript}")
-                print(f"  Response: {result['response']}")
-                print(f"  STT latency: {result['stt_latency']}s")
-                print(f"  LLM latency: {result['llm_latency']}s")
-                print(f"  TTS latency: {result['tts_latency']}s")
-                print(f"  Total latency: {result['total_latency']}s")
+                    transcript = result["transcript"]
+                    print(f"  Transcript: {transcript}")
+                    print(f"  Response: {result['response']}")
+                    print(f"  STT latency: {result['stt_latency']}s")
+                    print(f"  LLM latency: {result['llm_latency']}s")
+                    print(f"  TTS latency: {result['tts_latency']}s")
+                    print(f"  Total latency: {result['total_latency']}s")
 
-                if ref_text:
-                    word_error = wer(ref_text.lower(), transcript.lower())
-                    char_error = cer(ref_text.lower(), transcript.lower())
-                    print(f"  WER: {round(word_error, 4)}")
-                    print(f"  CER: {round(char_error, 4)}")
-                    wer_scores.append(word_error)
-                    cer_scores.append(char_error)
-                else:
-                    word_error = None
-                    char_error = None
-                    print(f"  WER/CER: no reference found for {utterance_id}")
+                    if ref_text:
+                        clean_ref = clean_text(ref_text)
+                        clean_trans = clean_text(result["transcript"])
 
-                results.append({
-                    "filename": filename,
-                    "utterance_id": utterance_id,
-                    "mode": mode,
-                    "reference": ref_text,
-                    "transcript": transcript,
-                    "response": result["response"],
-                    "audio_output": result["audio_output"],
-                    "wer": round(word_error, 4) if word_error is not None else None,
-                    "cer": round(char_error, 4) if char_error is not None else None,
-                    "stt_latency": result["stt_latency"],
-                    "llm_latency": result["llm_latency"],
-                    "tts_latency": result["tts_latency"],
-                    "total_latency": result["total_latency"]
-                })
+                        print(f"    DEBUG - Clean Ref: {clean_ref}")
+                        print(f"    DEBUG - Clean Trans: {clean_trans}")
 
-            except Exception as e:
-                print(f"  [ERROR] {e}")
-                results.append({
-                    "filename": filename,
-                    "utterance_id": utterance_id,
-                    "mode": mode,
-                    "error": str(e)
-                })
+                        word_error = wer(clean_ref, clean_trans)
+                        char_error = cer(clean_ref, clean_trans)
+                        
+                        print(f"  WER: {round(word_error, 4)}")
+                        print(f"  CER: {round(char_error, 4)}")
+                        wer_scores.append(word_error)
+                        cer_scores.append(char_error)
+                    else:
+                        word_error = None
+                        char_error = None
+                        print(f"  WER/CER: no reference found for {utterance_id}")
+
+                    results.append({
+                        "filename": filename,
+                        "utterance_id": utterance_id,
+                        "mode": mode,
+                        "reference": ref_text,
+                        "transcript": transcript,
+                        "response": result["response"],
+                        "audio_output": result["audio_output"],
+                        "wer": round(word_error, 4) if word_error is not None else None,
+                        "cer": round(char_error, 4) if char_error is not None else None,
+                        "stt_latency": result["stt_latency"],
+                        "llm_latency": result["llm_latency"],
+                        "tts_latency": result["tts_latency"],
+                        "total_latency": result["total_latency"]
+                    })
+                    save_checkpoint(results)
+
+                except Exception as e:
+                    if str(e) == "LLM_500_ERROR":
+                        print(f"  [!] Terdeteksi Error 500, menunggu 30 detik...")
+                        time.sleep(30) # Istirahat saat error
+                        # JANGAN save ke results/checkpoint agar file ini tetap masuk antrean berikutnya
+                    else:
+                        print(f"  [ERROR] {e}")
+                        # Jika error sistem lain, baru kita catat sebagai error
+                        results.append({"filename": filename, "mode": mode, "error": str(e)})
+                        save_checkpoint(results)
+                        success = True
 
     # Summary
     print("\n" + "=" * 60)
