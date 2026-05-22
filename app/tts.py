@@ -12,6 +12,83 @@ COQUI_CONFIG_PATH = os.path.join(COQUI_DIR, "config.json")
 COQUI_SPEAKERS_PATH = os.path.join(COQUI_DIR, "speakers.pth")
 COQUI_SPEAKER = "wibowo"
 
+ENGLISH_WORDS = {
+    "i": "ai",
+    "can": "ken",
+    "you": "yu",
+    "help": "help",
+    "use": "yuz",
+    "me": "mi",
+    "the": "de",
+    "is": "iz",
+    "are": "ar",
+    "was": "woz",
+    "be": "bi",
+    "have": "hev",
+    "has": "hez",
+    "do": "du",
+    "does": "daz",
+    "will": "wil",
+    "would": "wud",
+    "could": "kud",
+    "should": "shud",
+    "may": "mei",
+    "might": "mait",
+    "my": "mai",
+    "your": "yor",
+    "we": "wi",
+    "they": "dei",
+    "it": "it",
+    "this": "dis",
+    "that": "dat",
+    "what": "wot",
+    "how": "hau",
+    "why": "wai",
+    "where": "wer",
+    "when": "wen",
+    "who": "hu",
+    "please": "pliz",
+    "thank": "tengk",
+    "thanks": "tengks",
+    "yes": "yes",
+    "no": "no",
+    "ok": "oke",
+    "okay": "oke",
+    "good": "gut",
+    "great": "greit",
+    "right": "rait",
+    "here": "hir",
+    "there": "der",
+    "now": "nau",
+    "just": "jast",
+    "time": "taim",
+    "day": "dei",
+    "today": "tudei",
+    "tomorrow": "tumoro",
+    "flight": "flait",
+    "book": "buk",
+    "schedule": "skedul",
+    "transport": "transport",
+    "arrange": "areynj",
+    "explain": "eksplein",
+    "guide": "gaid",
+    "step": "step",
+    "simple": "simpel",
+    "include": "inklud",
+    "direct": "dayrekt",
+    "prepare": "priper",
+    "apply": "aplai",
+    "feel": "fil",
+    "tips": "tips",
+    "translate": "transleit",
+    "overwhelmed": "overwelmt",
+    "information": "informeyshen",
+    "check": "chek",
+    "next": "nekst",
+    "best": "best",
+    "visit": "vizit",
+}
+
 def _normalize_tts_text(text: str) -> str:
     """
     Membersihkan markdown dari LLM dan menyesuaikan ejaan (Spoken Form)
@@ -33,6 +110,9 @@ def _normalize_tts_text(text: str) -> str:
     # }
     # for word, replacement in lexicon.items():
     #     spoken_text = re.sub(rf'\b{word}\b', replacement, spoken_text)
+    for word, replacement in ENGLISH_WORDS.items():
+        # Gunakan \b agar hanya mengganti kata utuh, bukan bagian dari kata lain
+        spoken_text = re.sub(rf'\b{word}\b', replacement, spoken_text)
 
     return spoken_text
 
