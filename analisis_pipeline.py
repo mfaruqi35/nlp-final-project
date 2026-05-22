@@ -3,6 +3,8 @@ import json
 import time
 from datetime import datetime
 from jiwer import wer, cer
+import gc
+
 
 from app.stt import transcribe_speech_to_text
 from app.llm import generate_response
@@ -14,6 +16,18 @@ REFERENCE_FILE = os.path.join(BASE_DIR, "data", "corpus", "transcripts", "refere
 RESULTS_DIR = os.path.join(BASE_DIR, "data", "results")
 CHECKPOINT_FILE = os.path.join(RESULTS_DIR, "checkpoint.json")
 os.makedirs(RESULTS_DIR, exist_ok=True)
+
+import re
+
+def clean_text(text):
+    # 1. Ubah ke lowercase
+    text = text.lower()
+    # 2. Hapus semua tanda baca/karakter selain huruf dan angka
+    # (regex [^\w\s] berarti hapus semua yang bukan huruf, angka, atau spasi)
+    text = re.sub(r'[^\w\s]', '', text)
+    # 3. Hapus spasi ganda yang mungkin terjadi akibat penghapusan tanda baca
+    text = re.sub(r'\s+', ' ', text).strip()
+    return text
 
 def load_checkpoint():
     if os.path.exists(CHECKPOINT_FILE):
@@ -50,13 +64,20 @@ def run_pipeline(audio_path, mode):
 
     # LLM
     t1 = time.time()
+    # time.sleep(20)
     response_text = generate_response(transcript, mode)
     llm_latency = time.time() - t1
 
-    # TTS
-    t2 = time.time()
-    audio_output = transcribe_text_to_speech(response_text)
-    tts_latency = time.time() - t2
+
+    if "[ERROR]" in response_text or "500" in response_text:
+        print("  [INFO] LLM error detected, skipping TTS synthesis.")
+        raise Exception("LLM_500_ERROR")
+    
+    else:
+        t2 = time.time()
+        audio_output = transcribe_text_to_speech(response_text)
+        tts_latency = time.time() - t2
+
 
     total_latency = time.time() - t0
 
@@ -110,8 +131,15 @@ def main():
                 print(f"  Total latency: {result['total_latency']}s")
 
                 if ref_text:
-                    word_error = wer(ref_text.lower(), transcript.lower())
-                    char_error = cer(ref_text.lower(), transcript.lower())
+                    clean_ref = clean_text(ref_text)
+                    clean_trans = clean_text(result["transcript"])
+
+                    print(f"  DEBUG - Clean Ref: {clean_ref}")
+                    print(f"  DEBUG - Clean Trans: {clean_trans}")
+                    
+                    word_error = wer(clean_ref, clean_trans)
+                    char_error = cer(clean_ref, clean_trans)
+                    
                     print(f"  WER: {round(word_error, 4)}")
                     print(f"  CER: {round(char_error, 4)}")
                     wer_scores.append(word_error)
@@ -139,13 +167,15 @@ def main():
                 save_checkpoint(results)
 
             except Exception as e:
-                print(f"  [ERROR] {e}")
-                results.append({
-                    "filename": filename,
-                    "utterance_id": utterance_id,
-                    "mode": mode,
-                    "error": str(e)
-                })
+                if str(e) == "LLM_500_ERROR":
+                    print(f"  [!] Terdeteksi Error 500, menunggu 30 detik...")
+                    time.sleep(30) # Istirahat saat error
+                    # JANGAN save ke results/checkpoint agar file ini tetap masuk antrean berikutnya
+                else:
+                    print(f"  [ERROR] {e}")
+                    # Jika error sistem lain, baru kita catat sebagai error
+                    results.append({"filename": filename, "mode": mode, "error": str(e)})
+                    save_checkpoint(results)
 
     # Summary
     print("\n" + "=" * 60)

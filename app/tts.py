@@ -2,6 +2,7 @@ import os
 import uuid
 import tempfile
 import subprocess
+import re
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
@@ -20,6 +21,38 @@ COQUI_CONFIG_PATH = os.path.join(COQUI_DIR, "config.json")
 # Pilih nama speaker yang sesuai dengan isi file speakers.pth (misalnya: "wibowo")
 COQUI_SPEAKER = "wibowo"
 
+def clean_markdown_and_symbols(text: str) -> str:
+    # Hapus karakter Markdown seperti *, _, ~, dll
+    text = re.sub(r'[\*\_\~]', '', text)
+    # Hapus karakter non-alfabet/spasi yang tidak perlu
+    text = re.sub(r'[^\w\s]', '', text)
+    return text
+
+def _grapheme_to_phoneme(text: str) -> str:
+    """
+    Mengonversi huruf alfabet biasa menjadi simbol fonetik (IPA) 
+    agar dikenali oleh vocabulary model Indonesian-TTS.
+    """
+    text = text.lower()
+    
+    # Mapping fonem dasar
+    mapping = {
+        'v': 'f',
+        'ng': 'ŋ',
+        'ny': 'ɲ',
+        'sy': 'ʃ',
+        'kh': 'x',
+        'c': 'tʃ',
+        'y': 'j',   
+        'g': 'ɡ',  
+        'j': 'dʒ'
+    }
+    
+    for grapheme, phoneme in mapping.items():
+        text = text.replace(grapheme, phoneme)
+        
+    return text
+
 def transcribe_text_to_speech(text: str) -> str:
     """
     Fungsi untuk mengonversi teks menjadi suara menggunakan TTS engine yang ditentukan.
@@ -28,7 +61,9 @@ def transcribe_text_to_speech(text: str) -> str:
     Returns:
         str: Path ke file audio hasil konversi.
     """
-    path = _tts_with_coqui(text)
+    clean_txt = clean_markdown_and_symbols(text)
+    phonemic_text = _grapheme_to_phoneme(clean_txt)
+    path = _tts_with_coqui(phonemic_text)
     return path
 
 # === ENGINE 1: Coqui TTS ===

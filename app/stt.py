@@ -14,7 +14,7 @@ WHISPER_BINARY = os.path.join(WHISPER_DIR, "build", "bin", "whisper-cli")
 
 # TODO: Lengkapi path ke file model Whisper (contoh: ggml-large-v3-turbo.bin)
 # Gunakan os.path.join() untuk mengarah ke file model di dalam folder "models"
-WHISPER_MODEL_PATH = os.path.join(WHISPER_DIR, "models", "ggml-large-v3-turbo.bin")
+WHISPER_MODEL_PATH = os.path.join(WHISPER_DIR, "models", "ggml-base.bin")
 
 def transcribe_speech_to_text(file_bytes: bytes, file_ext: str = ".wav") -> str:
     """
