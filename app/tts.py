@@ -2,35 +2,46 @@ import os
 import uuid
 import tempfile
 import subprocess
+import re
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-
-# path ke folder utilitas TTS
 COQUI_DIR = os.path.join(BASE_DIR, "coqui_tts")
 
-# TODO: Lengkapi jalur path ke file model TTS
-# File model (misalnya checkpoint_1260000-inference.pth) harus berada di dalam folder coqui_utils/
 COQUI_MODEL_PATH = os.path.join(COQUI_DIR, "checkpoint_1260000-inference.pth")
-
-# TODO: Lengkapi jalur path ke file konfigurasi
-# File config.json harus berada di dalam folder coqui_utils/
 COQUI_CONFIG_PATH = os.path.join(COQUI_DIR, "config.json")
-
 COQUI_SPEAKERS_PATH = os.path.join(COQUI_DIR, "speakers.pth")
-
-# TODO: Tentukan nama speaker yang digunakan
-# Pilih nama speaker yang sesuai dengan isi file speakers.pth (misalnya: "wibowo")
 COQUI_SPEAKER = "wibowo"
 
+def _normalize_tts_text(text: str) -> str:
+    """
+    Membersihkan markdown dari LLM dan menyesuaikan ejaan (Spoken Form)
+    agar lebih natural saat diucapkan oleh model.
+    """
+    spoken_text = text.lower()
+
+    # 1. Bersihkan simbol Markdown/noise dari LLM (*, _, ~, dll)
+    spoken_text = re.sub(r'[\*\_\~]', '', spoken_text)
+    
+    # 2. Aturan Fonetik Konsonan Mati (Devoicing)
+    spoken_text = re.sub(r'd\b', 't', spoken_text)
+    spoken_text = re.sub(r'b\b', 'p', spoken_text)
+
+    # # 3. Kamus Pengecualian (Lexicon) untuk kata spesifik
+    # lexicon = {
+    #     "jadwal": "jatwal",
+    #     "jeddah": "jedah",
+    # }
+    # for word, replacement in lexicon.items():
+    #     spoken_text = re.sub(rf'\b{word}\b', replacement, spoken_text)
+
+    return spoken_text
 
 def _grapheme_to_phoneme(text: str) -> str:
     """
-    Mengonversi huruf alfabet biasa menjadi simbol fonetik (IPA) 
-    agar dikenali oleh vocabulary model Indonesian-TTS.
+    Mengonversi huruf alfabet biasa menjadi simbol fonetik (IPA).
     """
     text = text.lower()
     
-    # Mapping fonem dasar
     mapping = {
         'v': 'f',
         'ng': 'ŋ',
@@ -38,14 +49,18 @@ def _grapheme_to_phoneme(text: str) -> str:
         'sy': 'ʃ',
         'kh': 'x',
         'c': 'tʃ',
-        'y': 'j',   
-        'g': 'ɡ',  
-        'j': 'dʒ'
+        'j': 'dʒ',
+        'y': 'j',  
+        'g': 'ɡ'
     }
     
     for grapheme, phoneme in mapping.items():
         text = text.replace(grapheme, phoneme)
         
+    return text
+
+def _normalize_tts_text(text: str) -> str:
+    
     return text
 
 def transcribe_text_to_speech(text: str) -> str:
@@ -57,16 +72,17 @@ def transcribe_text_to_speech(text: str) -> str:
         str: Path ke file audio hasil konversi.
     """
 
-    phonemic_text = _grapheme_to_phoneme(text)
+# Alur Pipeline TTS:
+    # 1. Teks Mentah -> 2. Teks Normal (Spoken Form) -> 3. Teks IPA -> 4. Audio
+    normalized_text = _normalize_tts_text(text)
+    phonemic_text = _grapheme_to_phoneme(normalized_text)
     path = _tts_with_coqui(phonemic_text)
-    return path
 
 # === ENGINE 1: Coqui TTS ===
 def _tts_with_coqui(text: str) -> str:
     tmp_dir = tempfile.gettempdir()
     output_path = os.path.join(tmp_dir, f"tts_{uuid.uuid4()}.wav")
 
-    # jalankan Coqui TTS dengan subprocess
     cmd = [
         "tts",
         "--text", text,
@@ -78,7 +94,7 @@ def _tts_with_coqui(text: str) -> str:
     ]
     
     try:
-        subprocess.run(cmd, check=True)
+        subprocess.run(cmd, check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     except subprocess.CalledProcessError as e:
         print(f"[ERROR] TTS subprocess failed: {e}")
         return "[ERROR] Failed to synthesize speech"

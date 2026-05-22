@@ -59,6 +59,7 @@ humanfriendly==10.0
 idna==3.10
 inflect==7.5.0
 Jinja2==3.1.6
+jewer
 joblib==1.4.2
 jsonlines==1.2.0
 kiwisolver==1.4.8
@@ -159,7 +160,7 @@ tomlkit==0.13.2
 torch==2.7.0
 torchaudio==2.7.0
 tqdm==4.67.1
-transformers==4.51.3
+transformers==5.0.0
 triton==3.3.0
 typeguard==4.4.2
 typer==0.15.3
