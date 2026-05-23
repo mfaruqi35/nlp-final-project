@@ -1,15 +1,11 @@
 import os
 import subprocess
 
-# Atur path sesuai dengan struktur folder proyekmu
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 AUDIO_DIR = os.path.join(BASE_DIR, "data", "corpus", "audio")
 FIXED_DIR = os.path.join(BASE_DIR, "data", "corpus", "audio_fixed")
 
-# Buat folder output jika belum ada
 os.makedirs(FIXED_DIR, exist_ok=True)
-
-# Ambil SEMUA file .wav di folder corpus/audio
 all_audio_files = [f for f in os.listdir(AUDIO_DIR) if f.endswith(".wav")]
 
 print(f"Memulai standardisasi format untuk keseluruhan {len(all_audio_files)} file audio...")
@@ -19,7 +15,6 @@ for filename in all_audio_files:
     input_path = os.path.join(AUDIO_DIR, filename)
     output_path = os.path.join(FIXED_DIR, filename)
     
-    # Perintah FFmpeg untuk menyeragamkan format
     cmd = [
         "ffmpeg",
         "-y",                 # Timpa file output jika sudah ada
@@ -31,7 +26,6 @@ for filename in all_audio_files:
     ]
 
     try:
-        # Jalankan command FFmpeg
         subprocess.run(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=True)
         print(f"  [OK] Siap digunakan: {filename}")
     except subprocess.CalledProcessError:
