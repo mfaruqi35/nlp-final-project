@@ -20,6 +20,18 @@ ENGLISH_WORDS = {
     "use": "yuz",
     "me": "mi",
     "the": "de",
+    "taxi": "taksi",
+    "tax": "teks",
+    "taxes": "tekses",
+    "however": "hau wever",
+    "whoever": "hu wever",
+    "whatever": "wot ever",
+    "whenever": "wen ever",
+    "wherever": "wer ever",
+    "whichever": "witʃ ever",
+    "apologize": "apolojais",
+    "forever": "for ever",
+    "whatever": "wot ever",
     "is": "iz",
     "are": "ar",
     "was": "woz",
@@ -67,7 +79,7 @@ ENGLISH_WORDS = {
     "tomorrow": "tumoro",
     "flight": "flait",
     "book": "buk",
-    "schedule": "skedul",
+    "schedule": "skejul",
     "transport": "transport",
     "arrange": "areynj",
     "explain": "eksplein",
@@ -79,6 +91,7 @@ ENGLISH_WORDS = {
     "prepare": "priper",
     "apply": "aplai",
     "feel": "fil",
+    "fees": "fis",
     "tips": "tips",
     "translate": "transleit",
     "overwhelmed": "overwelmt",
@@ -87,14 +100,75 @@ ENGLISH_WORDS = {
     "next": "nekst",
     "best": "best",
     "visit": "vizit",
+    "organize": "organaiz",
+    "first": "fers",
+    "sure": "syur",
 }
+
+def _expand_numbers(text: str) -> str:
+    """
+    Mengonversi angka ke teks Indonesia.
+    """
+    ones = ['', 'satu', 'dua', 'tiga', 'empat', 'lima', 'enam', 'tujuh', 'delapan', 'sembilan',
+            'sepuluh', 'sebelas', 'dua belas', 'tiga belas', 'empat belas', 'lima belas',
+            'enam belas', 'tujuh belas', 'delapan belas', 'sembilan belas']
+    tens = ['', '', 'dua puluh', 'tiga puluh', 'empat puluh', 'lima puluh',
+            'enam puluh', 'tujuh puluh', 'delapan puluh', 'sembilan puluh']
+
+    def convert(n):
+        if n < 20:
+            return ones[n]
+        elif n < 100:
+            return tens[n // 10] + ((' ' + ones[n % 10]) if n % 10 else '')
+        elif n < 1000:
+            prefix = 'seratus' if n // 100 == 1 else ones[n // 100] + ' ratus'
+            rest = convert(n % 100)
+            return prefix + ((' ' + rest) if rest else '')
+        elif n < 1000000:
+            prefix = 'seribu' if n // 1000 == 1 else ones[n // 1000] + ' ribu'
+            rest = convert(n % 1000)
+            return prefix + ((' ' + rest) if rest else '')
+        else:
+            return str(n)
+
+    def replace_number(match):
+        num_str = match.group(0).replace(',', '').replace('.', '')
+        try:
+            return convert(int(num_str))
+        except:
+            return match.group(0)
+
+    return re.sub(r'\b\d[\d,\.]*\b', replace_number, text)
+
+def _expand_acronym(text: str) -> str:
+    """
+    Mengubah singkatan kapital menjadi huruf yang dieja satu per satu.
+    Contoh: KSA -> ke es a, PBB -> pe be be
+    """
+    vowel_map = {
+        'a': 'a', 'b': 'be', 'c': 'ce', 'd': 'de', 'e': 'e',
+        'f': 'ef', 'g': 'ge', 'h': 'ha', 'i': 'i', 'j': 'je',
+        'k': 'ka', 'l': 'el', 'm': 'em', 'n': 'en', 'o': 'o',
+        'p': 'pe', 'q': 'ki', 'r': 'er', 's': 'es', 't': 'te',
+        'u': 'u', 'v': 'fe', 'w': 'we', 'x': 'eks', 'y': 'ye',
+        'z': 'zet'
+    }
+
+    def expand(match):
+        word = match.group(0)
+        return ' '.join(vowel_map.get(c.lower(), c) for c in word)
+
+    # hanya match kata yang semua hurufnya kapital, minimal 2 huruf
+    return re.sub(r'\b[A-Z]{2,}\b', expand, text)
 
 def _normalize_tts_text(text: str) -> str:
     """
     Membersihkan markdown dari LLM dan menyesuaikan ejaan (Spoken Form)
     agar lebih natural saat diucapkan oleh model.
     """
-    spoken_text = text.lower()
+    spoken_text = _expand_acronym(text)
+    spoken_text = _expand_numbers(spoken_text)
+    spoken_text = spoken_text.lower()
 
     # 1. Bersihkan simbol Markdown/noise dari LLM (*, _, ~, dll)
     spoken_text = re.sub(r'[\*\_\~]', '', spoken_text)
@@ -152,7 +226,9 @@ def transcribe_text_to_speech(text: str) -> str:
 # Alur Pipeline TTS:
     # 1. Teks Mentah -> 2. Teks Normal (Spoken Form) -> 3. Teks IPA -> 4. Audio
     normalized_text = _normalize_tts_text(text)
+    print(f"[DEBUG - normalized] {normalized_text}")
     phonemic_text = _grapheme_to_phoneme(normalized_text)
+    print(f"[DEBUG - phonemic] {phonemic_text}")
     path = _tts_with_coqui(phonemic_text)
 
     return path
