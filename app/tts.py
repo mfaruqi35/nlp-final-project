@@ -3,6 +3,7 @@ import uuid
 import tempfile
 import subprocess
 import re
+import json
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 COQUI_DIR = os.path.join(BASE_DIR, "coqui_tts")
@@ -12,106 +13,10 @@ COQUI_CONFIG_PATH = os.path.join(COQUI_DIR, "config.json")
 COQUI_SPEAKERS_PATH = os.path.join(COQUI_DIR, "speakers.pth")
 COQUI_SPEAKER = "wibowo"
 
-ENGLISH_WORDS = {
-    "i": "ai",
-    "can": "ken",
-    "you": "yu",
-    "help": "help",
-    "use": "yuz",
-    "me": "mi",
-    "the": "de",
-    "taxi": "taksi",
-    "tax": "teks",
-    "taxes": "tekses",
-    "however": "hau wever",
-    "whoever": "hu wever",
-    "whatever": "wot ever",
-    "whenever": "wen ever",
-    "wherever": "wer ever",
-    "whichever": "witʃ ever",
-    "apologize": "apolojais",
-    "forever": "for ever",
-    "whatever": "wot ever",
-    "is": "iz",
-    "are": "ar",
-    "was": "woz",
-    "be": "bi",
-    "have": "hev",
-    "has": "hez",
-    "do": "du",
-    "does": "daz",
-    "will": "wil",
-    "would": "wud",
-    "could": "kud",
-    "should": "shud",
-    "may": "mei",
-    "might": "mait",
-    "my": "mai",
-    "your": "yor",
-    "we": "wi",
-    "they": "dei",
-    "it": "it",
-    "this": "dis",
-    "that": "dat",
-    "what": "wot",
-    "how": "hau",
-    "why": "wai",
-    "where": "wer",
-    "when": "wen",
-    "who": "hu",
-    "please": "pliz",
-    "thank": "tengk",
-    "thanks": "tengks",
-    "yes": "yes",
-    "no": "no",
-    "ok": "oke",
-    "okay": "oke",
-    "good": "gut",
-    "great": "greit",
-    "right": "rait",
-    "here": "hir",
-    "there": "der",
-    "now": "nau",
-    "just": "jast",
-    "time": "taim",
-    "day": "dei",
-    "today": "tudei",
-    "tomorrow": "tumoro",
-    "flight": "flait",
-    "book": "buk",
-    "schedule": "skejul",
-    "transport": "transport",
-    "arrange": "areynj",
-    "explain": "eksplein",
-    "guide": "gaid",
-    "step": "step",
-    "simple": "simpel",
-    "include": "inklud",
-    "direct": "dayrekt",
-    "prepare": "priper",
-    "apply": "aplai",
-    "feel": "fil",
-    "fees": "fis",
-    "tips": "tips",
-    "translate": "transleit",
-    "overwhelmed": "overwelmt",
-    "information": "informeyshen",
-    "check": "chek",
-    "next": "nekst",
-    "best": "best",
-    "visit": "vizit",
-    "organize": "organaiz",
-    "first": "fers",
-    "sure": "syur",
-    "know": "nou",
-    "because": "bikauz",
-    "like": "laik",
-    "subscribe": "sapskraip",
-    "efficient": "efishen",
-    "welcome": "welkam",
-    "come": "kam",
-    "want": "wan"
-}
+ENGLISH_WORDS_PATH = os.path.join(BASE_DIR, "..", "data", "corpus", "transcripts", "english_words.json")
+
+with open(ENGLISH_WORDS_PATH, "r", encoding="utf-8") as f:
+    ENGLISH_WORDS = json.load(f)
 
 def _expand_numbers(text: str) -> str:
     """
@@ -182,21 +87,13 @@ def _normalize_tts_text(text: str) -> str:
     spoken_text = spoken_text.lower()
 
     # 1. Bersihkan simbol Markdown/noise dari LLM (*, _, ~, dll)
-    spoken_text = re.sub(r'[\*\_\~]', '', spoken_text)
+    spoken_text = re.sub(r'[\*\_\~\"\']', '', spoken_text)
     
     # 2. Aturan Fonetik Konsonan Mati (Devoicing)
     spoken_text = re.sub(r'd\b', 't', spoken_text)
     spoken_text = re.sub(r'b\b', 'p', spoken_text)
 
-    # # 3. Kamus Pengecualian (Lexicon) untuk kata spesifik
-    # lexicon = {
-    #     "jadwal": "jatwal",
-    #     "jeddah": "jedah",
-    # }
-    # for word, replacement in lexicon.items():
-    #     spoken_text = re.sub(rf'\b{word}\b', replacement, spoken_text)
     for word, replacement in ENGLISH_WORDS.items():
-        # Gunakan \b agar hanya mengganti kata utuh, bukan bagian dari kata lain
         spoken_text = re.sub(rf'\b{word}\b', replacement, spoken_text)
 
     return spoken_text
