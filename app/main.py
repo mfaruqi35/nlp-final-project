@@ -3,7 +3,7 @@ import json
 import uuid
 from datetime import datetime
 from fastapi import FastAPI, UploadFile, File, Form
-from fastapi.responses import FileResponse
+from fastapi.responses import Response
 
 from app.stt import transcribe_speech_to_text
 from app.tts import transcribe_text_to_speech
@@ -19,8 +19,15 @@ os.makedirs(LOG_DIR, exist_ok=True)
 async def voice_chat(
     file: UploadFile = File(...),
     mode: str = Form(default="normalize")
-):
+):  
+    print(f"[DEBUG] Request masuk, file: {file.filename}, mode: {mode}")
     file_bytes = await file.read()
+    print(f"[DEBUG] file_bytes size: {len(file_bytes)}")
+
+    if len(file_bytes) < 1000:
+        from fastapi import HTTPException
+        raise HTTPException(status_code=400, detail="Audio terlalu pendek atau kosong")
+    
     file_ext = os.path.splitext(file.filename)[-1] or ".wav"
 
     #STT
@@ -30,7 +37,6 @@ async def voice_chat(
     response_text = generate_response(transcript, mode)
     if "[ERROR]" in response_text or "500 INTERNAL" in response_text:
         response_text = "Mohon maaf, server kecerdasan buatan sedang sibuk. Silakan coba beberapa saat lagi."
-    # ---------------------------------
 
     #TTS
     audio_path = transcribe_text_to_speech(response_text)
@@ -59,4 +65,10 @@ async def voice_chat(
     with open(log_path, "w", encoding="utf-8") as f:
         json.dump(logs, f, ensure_ascii=False, indent=2)
 
-    return FileResponse(audio_path, media_type="audio/wav", filename="response.wav")
+    with open(audio_path, "rb") as audio_file:
+        audio_bytes = audio_file.read()
+
+    print(f"[DEBUG] audio_path: {audio_path}")
+    print(f"[DEBUG] audio_bytes size: {len(audio_bytes)}")
+
+    return Response(content=audio_bytes, media_type="audio/wav")

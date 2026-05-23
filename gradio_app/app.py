@@ -16,7 +16,6 @@ def voice_chat(audio_path, mode):
     if response.status_code == 200:
         unique_filename = f"tts_output_{uuid.uuid4()}.wav"
         output_audio_path = os.path.join(tempfile.gettempdir(), unique_filename)
-        
         with open(output_audio_path, "wb") as f:
             f.write(response.content)
         return output_audio_path

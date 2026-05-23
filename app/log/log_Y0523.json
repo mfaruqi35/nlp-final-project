@@ -1,0 +1,18 @@
+[
+  {
+    "id": "5f84db0a-cef1-44c5-8e64-9407a3a5b5bd",
+    "timestamp": "2026-05-23T10:05:56.945558",
+    "mode": "preserve",
+    "transcript": " Test 2 test test.\n",
+    "response": "Test received! Saya siap membantu Anda. Let me know if there's anything you need, insyaAllah.",
+    "audio_output": "C:\\Users\\ADVAN\\AppData\\Local\\Temp\\tts_9855f684-29e1-4bff-b82c-40fcd311e2c6.wav"
+  },
+  {
+    "id": "e5612ac2-4d65-4424-86a9-e8bcf443858f",
+    "timestamp": "2026-05-23T10:43:07.515035",
+    "mode": "normalize",
+    "transcript": " Yes, yes.\n",
+    "response": "Baik, silakan beri tahu saya jika ada hal lain yang ingin Anda tanyakan atau jika Anda memerlukan bantuan lebih lanjut, insyaAllah.",
+    "audio_output": "C:\\Users\\ADVAN\\AppData\\Local\\Temp\\tts_29c9902d-865e-4be2-b902-4002bb122702.wav"
+  }
+]
