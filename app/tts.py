@@ -18,6 +18,23 @@ ENGLISH_WORDS_PATH = os.path.join(BASE_DIR, "..", "data", "corpus", "transcripts
 with open(ENGLISH_WORDS_PATH, "r", encoding="utf-8") as f:
     ENGLISH_WORDS = json.load(f)
 
+ENGLISH_SUFFIXES = ['ing', 'ed', 'er', 'est', 'ly', 'tion', 'sion', 'ness', 'ment', 'ful', 'less', 'able', 'ible', 'ify', 'ize', 'ise', 's']
+
+def _lookup_english_word(word: str) -> str:
+    if word in ENGLISH_WORDS:
+        return ENGLISH_WORDS[word]
+    
+    for suffix in ENGLISH_SUFFIXES:
+        if word.endswith(suffix) and len(word) - len(suffix) >= 3:
+            base = word[:-len(suffix)]
+            if base in ENGLISH_WORDS:
+                return ENGLISH_WORDS[base] + suffix
+            # handle e-drop: finding -> find, baking -> bake
+            if base + 'e' in ENGLISH_WORDS:
+                return ENGLISH_WORDS[base + 'e'] + suffix
+    
+    return None
+
 def _expand_numbers(text: str) -> str:
     """
     Mengonversi angka ke teks Indonesia.
@@ -91,7 +108,7 @@ def _normalize_tts_text(text: str) -> str:
     
     for word, replacement in ENGLISH_WORDS.items():
         spoken_text = re.sub(rf'\b{word}\b', replacement, spoken_text)
-        
+
     # 2. Aturan Fonetik Konsonan Mati (Devoicing)
     spoken_text = re.sub(r'd\b', 't', spoken_text)
     spoken_text = re.sub(r'b\b', 'p', spoken_text)
@@ -100,27 +117,39 @@ def _normalize_tts_text(text: str) -> str:
     return spoken_text
 
 def _grapheme_to_phoneme(text: str) -> str:
-    """
-    Mengonversi huruf alfabet biasa menjadi simbol fonetik (IPA).
-    """
-    text = text.lower()
-    
-    mapping = {
-        'v': 'f',
-        'ng': 'ŋ',
-        'ny': 'ɲ',
-        'sy': 'ʃ',
-        'kh': 'x',
-        'c': 'tʃ',
-        'j': 'dʒ',
-        'y': 'j',  
-        'g': 'ɡ'
-    }
-    
-    for grapheme, phoneme in mapping.items():
-        text = text.replace(grapheme, phoneme)
-        
-    return text
+    words = text.split()
+    result = []
+
+    for word in words:
+        clean = re.sub(r'[^a-zA-Z]', '', word.lower())
+        suffix = re.sub(r'[a-zA-Z]', '', word)
+
+        if not clean:
+            result.append(word)
+            continue
+
+        looked_up = _lookup_english_word(clean)
+        if looked_up:
+            result.append(looked_up + suffix)
+            continue
+
+        mapped = clean
+        mapping = {
+            'v': 'f',
+            'ng': 'ŋ',
+            'ny': 'ɲ',
+            'sy': 'ʃ',
+            'kh': 'x',
+            'c': 'tʃ',
+            'j': 'dʒ',
+            'y': 'j',
+            'g': 'ɡ'
+        }
+        for grapheme, phoneme in mapping.items():
+            mapped = mapped.replace(grapheme, phoneme)
+        result.append(mapped + suffix)
+
+    return ' '.join(result)
 
 
 def transcribe_text_to_speech(text: str) -> str:
