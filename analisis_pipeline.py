@@ -95,6 +95,41 @@ def run_pipeline(audio_path, mode):
         "total_latency": round(total_latency, 2)
     }
 
+def summarize_by_utterance(results):
+    utterance_data = {}
+
+    for r in results:
+        if "error" in r and "transcript" not in r:
+            continue
+        uid = r.get("utterance_id")
+        if not uid:
+            continue
+        if uid not in utterance_data:
+            utterance_data[uid] = {"wer": [], "cer": [], "stt_latency": [], "llm_latency": [], "tts_latency": [], "total_latency": []}
+
+        if r.get("wer") is not None:
+            utterance_data[uid]["wer"].append(r["wer"])
+        if r.get("cer") is not None:
+            utterance_data[uid]["cer"].append(r["cer"])
+        for key in ["stt_latency", "llm_latency", "tts_latency", "total_latency"]:
+            if r.get(key) is not None:
+                utterance_data[uid][key].append(r[key])
+
+    print("\nSUMMARY PER UTTERANCE")
+    print("=" * 60)
+    for uid in sorted(utterance_data.keys(), key=lambda x: int(x.replace("audio", ""))):
+        data = utterance_data[uid]
+        avg = lambda lst: round(sum(lst) / len(lst), 4) if lst else None
+        print(f"\n  {uid}:")
+        print(f"    Avg WER        : {avg(data['wer'])}")
+        print(f"    Avg CER        : {avg(data['cer'])}")
+        print(f"    Avg STT latency: {avg(data['stt_latency'])}s")
+        print(f"    Avg LLM latency: {avg(data['llm_latency'])}s")
+        print(f"    Avg TTS latency: {avg(data['tts_latency'])}s")
+        print(f"    Avg Total      : {avg(data['total_latency'])}s")
+
+    return utterance_data
+
 def main():
     reference = load_reference()
     audio_files = sorted([
@@ -211,6 +246,8 @@ def main():
         avg_latency = round(sum(latencies) / len(latencies), 2)
         print(f"Average total latency: {avg_latency}s")
 
+    utterance_summary = summarize_by_utterance(results)
+
     # Simpan hasil
     output_file = os.path.join(RESULTS_DIR, f"pipeline_results_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json")
     with open(output_file, "w", encoding="utf-8") as f:
@@ -221,6 +258,10 @@ def main():
                 "average_cer": avg_cer if wer_scores else None,
                 "average_latency": avg_latency if latencies else None
             },
+                "summary_per_utterance": {
+                    uid: {k: round(sum(v)/len(v), 4) if v else None for k, v in data.items()}
+                    for uid, data in utterance_summary.items()
+                },
             "results": results
         }, f, ensure_ascii=False, indent=2)
 

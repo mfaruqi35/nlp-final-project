@@ -1,7 +1,7 @@
 from app.tts import transcribe_text_to_speech
 import os
 
-text = 'klik tombol "cari" lalu pilih'
+text = "main game gaming gamer games riot games"
 output = transcribe_text_to_speech(text)
 print(f"Output: {output}")
 os.startfile(output)

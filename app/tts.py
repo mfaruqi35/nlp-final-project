@@ -89,12 +89,13 @@ def _normalize_tts_text(text: str) -> str:
     # 1. Bersihkan simbol Markdown/noise dari LLM (*, _, ~, dll)
     spoken_text = re.sub(r'[\*\_\~\"\']', '', spoken_text)
     
+    for word, replacement in ENGLISH_WORDS.items():
+        spoken_text = re.sub(rf'\b{word}\b', replacement, spoken_text)
+        
     # 2. Aturan Fonetik Konsonan Mati (Devoicing)
     spoken_text = re.sub(r'd\b', 't', spoken_text)
     spoken_text = re.sub(r'b\b', 'p', spoken_text)
 
-    for word, replacement in ENGLISH_WORDS.items():
-        spoken_text = re.sub(rf'\b{word}\b', replacement, spoken_text)
 
     return spoken_text
 
