@@ -37,12 +37,10 @@ def load_checkpoint():
             return json.load(f)
     return []
 
-# Menyimpan checkpoint
 def save_checkpoint(results):
     with open(CHECKPOINT_FILE, "w", encoding="utf-8") as f:
         json.dump(results, f, ensure_ascii=False, indent=2)    
 
-# Load referensi naskah untuk menghitung WER dan CER
 def load_reference():
     with open(REFERENCE_FILE, "r", encoding="utf-8") as f:
         return json.load(f)

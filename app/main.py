@@ -41,6 +41,10 @@ async def voice_chat(
     #TTS
     audio_path = transcribe_text_to_speech(response_text)
 
+    if not os.path.exists(audio_path):
+        from fastapi import HTTPException
+        raise HTTPException(status_code=500, detail=f"TTS failed: {audio_path}")
+    
     # Logging
     log_entry = {
         "id": str(uuid.uuid4()),
