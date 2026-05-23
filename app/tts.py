@@ -103,6 +103,14 @@ ENGLISH_WORDS = {
     "organize": "organaiz",
     "first": "fers",
     "sure": "syur",
+    "know": "nou",
+    "because": "bikauz",
+    "like": "laik",
+    "subscribe": "sapskraip",
+    "efficient": "efishen",
+    "welcome": "welkam",
+    "come": "kam",
+    "want": "wan"
 }
 
 def _expand_numbers(text: str) -> str:
@@ -151,15 +159,18 @@ def _expand_acronym(text: str) -> str:
         'k': 'ka', 'l': 'el', 'm': 'em', 'n': 'en', 'o': 'o',
         'p': 'pe', 'q': 'ki', 'r': 'er', 's': 'es', 't': 'te',
         'u': 'u', 'v': 'fe', 'w': 'we', 'x': 'eks', 'y': 'ye',
-        'z': 'zet'
+        'z': 'zet', '0': 'nol', '1': 'satu', '2': 'dua', '3': 'tiga', '4': 'empat',
+        '5': 'lima', '6': 'enam', '7': 'tujuh', '8': 'delapan', '9': 'sembilan'
     }
 
     def expand(match):
         word = match.group(0)
+        if not any(c.isupper() for c in word):
+            return word
         return ' '.join(vowel_map.get(c.lower(), c) for c in word)
 
     # hanya match kata yang semua hurufnya kapital, minimal 2 huruf
-    return re.sub(r'\b[A-Z]{2,}\b', expand, text)
+    return re.sub(r'\b[A-Z0-9]{2,}\b', expand, text)
 
 def _normalize_tts_text(text: str) -> str:
     """
