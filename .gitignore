@@ -3,4 +3,3 @@ venv/
 data/
 whisper/
 coqui_tts/
-test_tts.py

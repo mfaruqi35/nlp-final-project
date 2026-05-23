@@ -6,8 +6,8 @@ import re
 import json
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-COQUI_DIR = os.path.join(BASE_DIR, "coqui_tts")
 
+COQUI_DIR = os.path.join(BASE_DIR, "coqui_tts")
 COQUI_MODEL_PATH = os.path.join(COQUI_DIR, "checkpoint_1260000-inference.pth")
 COQUI_CONFIG_PATH = os.path.join(COQUI_DIR, "config.json")
 COQUI_SPEAKERS_PATH = os.path.join(COQUI_DIR, "speakers.pth")
@@ -21,6 +21,9 @@ with open(ENGLISH_WORDS_PATH, "r", encoding="utf-8") as f:
 ENGLISH_SUFFIXES = ['ing', 'ed', 'er', 'est', 'ly', 'tion', 'sion', 'ness', 'ment', 'ful', 'less', 'able', 'ible', 'ify', 'ize', 'ise', 's']
 
 def _lookup_english_word(word: str) -> str:
+    """
+    Normalisasi kata dasar bahasa Inggris
+    """
     if word in ENGLISH_WORDS:
         return ENGLISH_WORDS[word]
     
@@ -117,6 +120,9 @@ def _normalize_tts_text(text: str) -> str:
     return spoken_text
 
 def _grapheme_to_phoneme(text: str) -> str:
+    """
+    Fonem untuk pengucapan model LLM
+    """
     words = text.split()
     result = []
 

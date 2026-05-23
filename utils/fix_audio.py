@@ -1,6 +1,11 @@
 import os
 import subprocess
 
+"""
+Program untuk memperbaiki format audio 
+yang tidak sesuai dengan whisper
+"""
+
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 AUDIO_DIR = os.path.join(BASE_DIR, "data", "corpus", "audio")
 FIXED_DIR = os.path.join(BASE_DIR, "data", "corpus", "audio_fixed")
@@ -8,8 +13,7 @@ FIXED_DIR = os.path.join(BASE_DIR, "data", "corpus", "audio_fixed")
 os.makedirs(FIXED_DIR, exist_ok=True)
 all_audio_files = [f for f in os.listdir(AUDIO_DIR) if f.endswith(".wav")]
 
-print(f"Memulai standardisasi format untuk keseluruhan {len(all_audio_files)} file audio...")
-print("Proses ini akan memastikan seluruh dataset seragam 100% untuk Whisper.\n")
+print(f"Standardize {len(all_audio_files)} audio files...")
 
 for filename in all_audio_files:
     input_path = os.path.join(AUDIO_DIR, filename)
@@ -27,8 +31,8 @@ for filename in all_audio_files:
 
     try:
         subprocess.run(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=True)
-        print(f"  [OK] Siap digunakan: {filename}")
+        print(f"  [OK] Ready to use: {filename}")
     except subprocess.CalledProcessError:
-        print(f"  [ERROR] FFmpeg gagal memproses file ini: {filename}")
+        print(f"  [ERROR] FFmpeg fail to process: {filename}")
 
-print("\nSelesai! Sekarang folder 'audio_fixed' berisi SELURUH dataset dengan format yang sudah sempurna.")
+print("\nAudio fixing done, all new audio stored in 'audio_fixed' folder")
