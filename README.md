@@ -138,6 +138,13 @@ voice_chatbot_project/
 | audio19   | Ahyanan saya bingung mulai dari mana untuk umrah                        | 1.1250 | 0.5521 | 5.09    | 30.70   | 17.99   | 53.77     |
 | audio20   | Translate ke English: aku mau pergi ke Makkah minggu depan              | 0.9000 | 0.4589 | 5.42    | 56.55   | 17.58   | 79.55     |
 
+## 🔊 Contoh Output Audio
+
+| Mode      | Link                                                                                            |
+| --------- | ----------------------------------------------------------------------------------------------- |
+| Normalize | [Dengarkan](https://drive.google.com/file/d/1Iu6R-zZ_ZSZOCsk6-1xVT6o4G7aC6QOV/view?usp=sharing) |
+| Preserve  | [Dengarkan](https://drive.google.com/file/d/1jFWTyK7yWLlyqH1kXzN7Hl-tyZ8rhbCJ/view?usp=sharing) |
+
 ## 👨‍💻 Dibuat Untuk
 
 Proyek UAS mata kuliah _Pemrosesan Bahasa Alami_ — Semester Genap 2025/2026.
