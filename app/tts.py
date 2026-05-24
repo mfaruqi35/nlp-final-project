@@ -4,8 +4,11 @@ import tempfile
 import subprocess
 import re
 import json
+import sys
+
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+TTS_BINARY = os.path.join(os.path.dirname(sys.executable), "tts.exe")
 
 COQUI_DIR = os.path.join(BASE_DIR, "coqui_tts")
 COQUI_MODEL_PATH = os.path.join(COQUI_DIR, "checkpoint_1260000-inference.pth")
@@ -185,7 +188,7 @@ def _tts_with_coqui(text: str) -> str:
     output_path = os.path.join(tmp_dir, f"tts_{uuid.uuid4()}.wav")
 
     cmd = [
-        "tts",
+        TTS_BINARY,
         "--text", text,
         "--model_path", COQUI_MODEL_PATH,
         "--config_path", COQUI_CONFIG_PATH,

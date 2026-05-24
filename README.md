@@ -14,8 +14,8 @@ Proyek UAS ini merupakan aplikasi chatbot berbasis suara yang memungkinkan pengg
 ### 1. Clone Repository
 
 ```bash
-git clone https://github.com/mfaruqi35/nlp-final-project.git
-cd nlp-final-project
+git clone https://github.com/mfaruqi35/voice_chatbot_project.git
+cd voice_chatbot_project
 ```
 
 ### 2. Buat Virtual Environment
@@ -100,6 +100,7 @@ voice_chatbot_project/
 - Semua file audio sudah diconvert ke format `.wav`.
 - Model whisper yang dipakai pada percobaan ini adalah `ggml-base` tanpa initial prompt.
 - Speaker yang dipakai pada percobaan ini adalah `wibowo` dari coqui_tts.
+- Percobaan dilakukan tanpa menggunakan GPU.
 
 ## 📊 Hasil Evaluasi Pipeline
 
