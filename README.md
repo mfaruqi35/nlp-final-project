@@ -140,10 +140,12 @@ voice_chatbot_project/
 
 ## 🔊 Contoh Output Audio
 
+Pertanyaan: Uridu arrange transport min Jeddah ila Madinah ghadan (Utterance 6)
+
 | Mode      | Link                                                                                            |
 | --------- | ----------------------------------------------------------------------------------------------- |
-| Normalize | [Dengarkan](https://drive.google.com/file/d/1Iu6R-zZ_ZSZOCsk6-1xVT6o4G7aC6QOV/view?usp=sharing) |
-| Preserve  | [Dengarkan](https://drive.google.com/file/d/1Va4LPTU3GqB6f5vjNBvhNZkp8mI2dBrA/view?usp=sharing) |
+| Normalize | [Dengarkan](https://drive.google.com/file/d/1AQC9e2swmO-nz69rr6Q1Xlwf2PbUg2Mo/view?usp=sharing) |
+| Preserve  | [Dengarkan](https://drive.google.com/file/d/1969DvC42hwbFbw73NhJwNKocTYb_SIpT/view?usp=sharing) |
 
 ## 👨‍💻 Dibuat Untuk
 
