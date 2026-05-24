@@ -6,7 +6,7 @@ Program untuk memperbaiki format audio
 yang tidak sesuai dengan whisper
 """
 
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 AUDIO_DIR = os.path.join(BASE_DIR, "data", "corpus", "audio")
 FIXED_DIR = os.path.join(BASE_DIR, "data", "corpus", "audio_fixed")
 

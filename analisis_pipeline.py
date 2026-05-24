@@ -138,8 +138,8 @@ def main():
 
     results = load_checkpoint()
     processed = set((r["filename"], r["mode"]) for r in results if "error" not in r or r.get("transcript"))
-    wer_scores = []
-    cer_scores = []
+    wer_scores = [r["wer"] for r in results if r.get("wer") is not None]
+    cer_scores = [r["cer"] for r in results if r.get("cer") is not None]
 
     print(f"Total audio files: {len(audio_files)}")
     print("=" * 60)
@@ -262,7 +262,6 @@ def main():
                     uid: {k: round(sum(v)/len(v), 4) if v else None for k, v in data.items()}
                     for uid, data in utterance_summary.items()
                 },
-            "results": results
         }, f, ensure_ascii=False, indent=2)
 
     print(f"\nResults saved to: {output_file}")

@@ -3,5 +3,9 @@ venv/
 data/
 !data/corpus/transcripts/english_words.json
 !data/corpus/transcripts/reference.json
+!data/results/pipeline_results_*.json
+app/chat_history.json
 whisper/
 coqui_tts/
+app/__pycache__/
+app/log/
