@@ -1,5 +1,7 @@
 venv/
 .env
 data/
+!data/corpus/transcripts/english_words.json
+!data/corpus/transcripts/reference.json
 whisper/
 coqui_tts/

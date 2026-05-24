@@ -8,7 +8,7 @@ import os
 Py file for debugging
 """
 
-text = "upacara mencari cari carikan percikan secercah ceria canda cinta"
+text = " First, open a travel website or airline app and input your departure city, Jeddah as your destination, and your travel dates. Then, choose your flight, fill in the passenger details, and complete the payment online, insyaAllah."
 print(f"[TEXT] {text}")
 output = transcribe_text_to_speech(text)
 print(f"Output: {output}")

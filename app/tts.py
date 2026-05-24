@@ -149,7 +149,9 @@ def _grapheme_to_phoneme(text: str) -> str:
             'c': 'tʃ',
             'j': 'dʒ',
             'y': 'j',
-            'g': 'ɡ'
+            'g': 'ɡ',
+            'q': 'k',
+            'ph': 'f'
         }
         for grapheme, phoneme in mapping.items():
             mapped = mapped.replace(grapheme, phoneme)
