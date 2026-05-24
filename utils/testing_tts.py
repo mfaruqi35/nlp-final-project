@@ -8,7 +8,7 @@ import os
 Py file for debugging
 """
 
-text = "cari, carikan"
+text = "cari, carikan, option, nation, lotion, car, card, cart, cloth, coward, charity"
 print(f"[TEXT] {text}")
 output = transcribe_text_to_speech(text)
 if "[ERROR]" not in output:

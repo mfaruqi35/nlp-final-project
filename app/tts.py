@@ -117,13 +117,13 @@ def _normalize_tts_text(text: str) -> str:
         normalized_phrase = phrase
         for word, replacement in ENGLISH_WORDS.items():
             normalized_phrase = re.sub(rf'\b{word}\b', replacement, normalized_phrase)
+        normalized_phrase = re.sub(r'\bc(?=[aourl])', 'k', normalized_phrase)
         spoken_text = spoken_text.replace(f"<en>{phrase}</en>", normalized_phrase)
 
     spoken_text = re.sub(r'</?en>', '', spoken_text)
     spoken_text = re.sub(r'</?ar>', '', spoken_text)
     spoken_text = re.sub(r'<[^>]+>', '', spoken_text)
 
-    # 2. Aturan Fonetik Konsonan Mati (Devoicing)
     spoken_text = re.sub(r'd\b', 't', spoken_text)
     spoken_text = re.sub(r'b\b', 'p', spoken_text)
     spoken_text = re.sub(r'est\b', 'es', spoken_text)
@@ -131,6 +131,7 @@ def _normalize_tts_text(text: str) -> str:
     spoken_text = re.sub(r'ngle\b', 'nggel', spoken_text)
     spoken_text = re.sub(r'le\b', 'el', spoken_text)
     spoken_text = re.sub(r'ch\b', 'c', spoken_text)
+    spoken_text = re.sub(r'tion\b', 'syen', spoken_text)
 
 
     return spoken_text
