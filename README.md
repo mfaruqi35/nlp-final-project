@@ -70,7 +70,7 @@ voice_chatbot_project/
 │   ├── stt.py                          # Transkripsi suara (whisper.cpp)
 │   ├── tts.py                          # TTS dengan Coqui
 │   └── whisper/
-        └── whisper.cpp/                # Hasil clone whisper.cpp
+│       └── whisper.cpp/                # Hasil clone whisper.cpp
 │   └── coqui_utils/                    # Model dan config Coqui TTS
 │
 ├── gradio_app/
@@ -143,7 +143,7 @@ voice_chatbot_project/
 | Mode      | Link                                                                                            |
 | --------- | ----------------------------------------------------------------------------------------------- |
 | Normalize | [Dengarkan](https://drive.google.com/file/d/1Iu6R-zZ_ZSZOCsk6-1xVT6o4G7aC6QOV/view?usp=sharing) |
-| Preserve  | [Dengarkan](https://drive.google.com/file/d/1jFWTyK7yWLlyqH1kXzN7Hl-tyZ8rhbCJ/view?usp=sharing) |
+| Preserve  | [Dengarkan](https://drive.google.com/file/d/1Va4LPTU3GqB6f5vjNBvhNZkp8mI2dBrA/view?usp=sharing) |
 
 ## 👨‍💻 Dibuat Untuk
 
