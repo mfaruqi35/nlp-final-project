@@ -8,14 +8,12 @@ import os
 Py file for debugging
 """
 
-text = "best"
+text = "Welcome to our voice assistant system. Kami siap help you dengan berbagai pertanyaan seputar travel dan informasi umum, insyaallah."
 print(f"[TEXT] {text}")
 output = transcribe_text_to_speech(text)
-# Pastikan output bukan error sebelum diputar
 if "[ERROR]" not in output:
     print(f"Berhasil! Memutar audio di: {output}")
     os.startfile(output)
 else:
     print("Pembuatan audio gagal, file tidak diputar.")
-print(f"Output: {output}")
 os.startfile(output)

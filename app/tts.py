@@ -21,7 +21,7 @@ ENGLISH_WORDS_PATH = os.path.join(BASE_DIR, "..", "data", "corpus", "transcripts
 with open(ENGLISH_WORDS_PATH, "r", encoding="utf-8") as f:
     ENGLISH_WORDS = json.load(f)
 
-ENGLISH_SUFFIXES = ['ing', 'ed', 'er', 'est', 'ly', 'tion', 'sion', 'ness', 'ment', 'ful', 'less', 'able', 'ible', 'ify', 'ize', 'ise', 's']
+ENGLISH_SUFFIXES = ['ing', 'ed', 'er', 'est', 'ly', 'tion', 'sion', 'ness', 'ment', 'ful', 'less', 'able', 'ible', 'ify', 'ize', 'ise', 'es', 's']
 
 def _lookup_english_word(word: str) -> str:
     """
@@ -118,6 +118,9 @@ def _normalize_tts_text(text: str) -> str:
     # 2. Aturan Fonetik Konsonan Mati (Devoicing)
     spoken_text = re.sub(r'd\b', 't', spoken_text)
     spoken_text = re.sub(r'b\b', 'p', spoken_text)
+    spoken_text = re.sub(r'est\b', 'es', spoken_text)
+    spoken_text = re.sub(r'eck\b', 'ek', spoken_text)
+    spoken_text = re.sub(r'ch\b', 'c', spoken_text)
 
 
     return spoken_text
