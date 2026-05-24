@@ -147,4 +147,4 @@ voice_chatbot_project/
 
 ## 👨‍💻 Dibuat Untuk
 
-Proyek UAS mata kuliah _Pemrosesan Bahasa Alami_ — Semester Genap 2025/2026.
+Proyek UAS mata kuliah _Praktikum Pemrosesan Bahasa Alami_ — Semester Genap 2025/2026.
