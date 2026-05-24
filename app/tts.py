@@ -162,7 +162,7 @@ def _grapheme_to_phoneme(text: str) -> str:
             'ny': 'ɲ',
             'sy': 'ʃ',
             'kh': 'x',
-            'c': 'tʃ',
+            'c': 'tʃh',
             'j': 'dʒ',
             'y': 'j',
             'g': 'ɡ',

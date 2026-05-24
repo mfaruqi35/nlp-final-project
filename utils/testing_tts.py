@@ -8,7 +8,7 @@ import os
 Py file for debugging
 """
 
-text = "Welcome to our voice assistant system. Kami siap help you dengan berbagai pertanyaan seputar travel dan informasi umum, insyaallah."
+text = "cari, carikan"
 print(f"[TEXT] {text}")
 output = transcribe_text_to_speech(text)
 if "[ERROR]" not in output:
