@@ -131,31 +131,32 @@ def generate_response(prompt: str, mode: str = "normalize") -> str:
         except Exception as api_err:
             print(f"[ERROR] Gemini API call failed: {api_err}")
            
-            return json.dumps({
-                "teks_stt_asli": prompt,
-                "teks_koreksi": prompt,
-                "pos_tags": [],
-                "entities": {},
-                "response_text": "Maaf, terjadi kesalahan pada sistem AI kami saat memproses permintaan Anda."
-            })
+            return "Maaf, terjadi kesalahan pada sistem saat memproses permintaan Anda."
         
         save_chat_history(chat)
         clean_json_str = re.sub(r'```json|```', '', response.text).strip()
         parsed_data = json.loads(clean_json_str)
 
+        if not isinstance(parsed_data, dict):
+            return "Maaf, terjadi kesalahan format pada respons AI."
+
         print("\n[DEBUG - POS TAGGING HASIL STT]")
         print(f"Teks Asli: {parsed_data.get('teks_stt_asli', '')}")
         print(f"Koreksi  : {parsed_data.get('teks_koreksi', '')}")
+
         pos_tags = parsed_data.get("pos_tags", [])
-        for item in pos_tags:
-            print(f"  - {item.get('kata', '')} : {item.get('tag', '')}")
+        if isinstance(pos_tags, list):
+            for item in pos_tags:
+                if isinstance(item, dict):
+                    print(f"  - {item.get('kata', '')} : {item.get('tag', '')}")
         
         print("\n[DEBUG - NER HASIL STT]")
         entities = parsed_data.get("entities", {})
-        for key, value in entities.items():
-            print(f"  - {key} : {value}")
+        if isinstance(entities, dict):
+            for key, value in entities.items():
+                print(f"  - {key} : {value}")
 
-        return parsed_data.get("response_text", "").strip()
+        return str(parsed_data.get("response_text", "Maaf, terjadi kesalahan pemrosesan teks.")).strip()
     
     except Exception as e:
         return f"[ERROR] {str(e)}"
