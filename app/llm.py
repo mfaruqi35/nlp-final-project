@@ -35,6 +35,7 @@ You will receive a transcript from a Speech-to-Text system.
 2. Perform Part-of-Speech (POS) tagging on the corrected input.
 3. Perform Named Entity Recognition (NER) on the corrected input to extract entities like DESTINATION, DATE, INTENT.
 4. You must respond strictly in JSON format without markdown.
+5. FALLBACK: If the input text is completely garbled or you cannot understand the transliterated Arabic/English well enough to fulfill the prompt, you must still return valid JSON. Do not crash. Use "Maaf, saya tidak mengerti maksud Anda" for the response_text, and leave the entities and pos_tags empty.
 
 JSON format:
 {
@@ -67,6 +68,7 @@ You will receive a transcript from a Speech-to-Text system.
 2. Perform Part-of-Speech (POS) tagging on the corrected input.
 3. Perform Named Entity Recognition (NER) on the corrected input to extract entities like DESTINATION, DATE, INTENT.
 4. You must respond strictly in JSON format without markdown.
+5. FALLBACK: If the input text is completely garbled or you cannot understand the transliterated Arabic/English well enough to fulfill the prompt, you must still return valid JSON. Do not crash. Use "Maaf, saya tidak mengerti maksud Anda" for the response_text, and leave the entities and pos_tags empty.
 
 JSON format:
 {
@@ -123,7 +125,20 @@ def generate_response(prompt: str, mode: str = "normalize") -> str:
 
     try:
         chat = load_chat_history(config)
-        response = chat.send_message(prompt)
+
+        try:
+            response = chat.send_message(prompt)
+        except Exception as api_err:
+            print(f"[ERROR] Gemini API call failed: {api_err}")
+           
+            return json.dumps({
+                "teks_stt_asli": prompt,
+                "teks_koreksi": prompt,
+                "pos_tags": [],
+                "entities": {},
+                "response_text": "Maaf, terjadi kesalahan pada sistem AI kami saat memproses permintaan Anda."
+            })
+        
         save_chat_history(chat)
         clean_json_str = re.sub(r'```json|```', '', response.text).strip()
         parsed_data = json.loads(clean_json_str)
