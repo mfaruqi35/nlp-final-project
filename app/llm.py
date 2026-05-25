@@ -124,16 +124,16 @@ def generate_response(prompt: str, mode: str = "normalize") -> str:
     config = types.GenerateContentConfig(system_instruction=instruction, response_mime_type="application/json")
 
     try:
-        chat = load_chat_history(config)
-
         try:
-            response = chat.send_message(prompt)
+            response = client.models.generate_content(
+                    model=MODEL,
+                    contents=prompt,
+                    config=config
+                )
         except Exception as api_err:
             print(f"[ERROR] Gemini API call failed: {api_err}")
            
             return "Maaf, terjadi kesalahan pada sistem saat memproses permintaan Anda."
-        
-        save_chat_history(chat)
         clean_json_str = re.sub(r'```json|```', '', response.text).strip()
         parsed_data = json.loads(clean_json_str)
 
