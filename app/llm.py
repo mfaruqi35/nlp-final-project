@@ -125,15 +125,17 @@ def generate_response(prompt: str, mode: str = "normalize") -> str:
 
     try:
         try:
+            print("[INFO] Sending prompt to Gemini AI and waiting for response...")
             response = client.models.generate_content(
                     model=MODEL,
                     contents=prompt,
                     config=config
                 )
+            print("[INFO] LLM Response successfully fetched")
         except Exception as api_err:
             print(f"[ERROR] Gemini API call failed: {api_err}")
-           
             return "Maaf, terjadi kesalahan pada sistem saat memproses permintaan Anda."
+        
         clean_json_str = re.sub(r'```json|```', '', response.text).strip()
         parsed_data = json.loads(clean_json_str)
 

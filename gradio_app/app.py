@@ -171,8 +171,6 @@ select.mic-select,
     -moz-appearance: none;
 }
 
-
-/* Audio label fix - override dark background on label */
 .audio-block label,
 .audio-block .label-wrap,
 .audio-block .label-wrap span,
