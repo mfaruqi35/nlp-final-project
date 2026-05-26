@@ -44,7 +44,7 @@ Download model whisper:
 
 ```bash
 cd whisper/whisper.cpp
-./models/download-ggml-model.sh large-v3-turbo
+./models/download-ggml-model.sh <nama-model>
 ```
 
 ### 4. Setup Coqui TTS
@@ -98,8 +98,8 @@ voice_chatbot_project/
 ## 📚 Catatan
 
 - Semua file audio sudah diconvert ke format `.wav`.
-- Model whisper yang dipakai pada percobaan ini adalah `ggml-base` tanpa initial prompt.
-- Speaker yang dipakai pada percobaan ini adalah `wibowo` dari coqui_tts.
+- Model whisper yang dipakai pada percobaan ini adalah `ggml-base` **dengan** initial prompt dan flag `-l id`.
+- Speaker yang dipakai pada percobaan ini adalah `wibowo` dari coqui TTS.
 - Percobaan dilakukan tanpa menggunakan GPU.
 
 ## 📊 Hasil Evaluasi Pipeline
@@ -109,41 +109,41 @@ voice_chatbot_project/
 | Metrik            | Nilai       |
 | ----------------- | ----------- |
 | Total File Audio  | 561         |
-| Rata-rata WER     | 0.8774      |
-| Rata-rata CER     | 0.4667      |
-| Rata-rata Latency | 57.01 detik |
+| Rata-rata WER     | 0.2604      |
+| Rata-rata CER     | 0.0903      |
+| Rata-rata Latency | 75.72 detik |
 
 ### Summary Per Utterance
 
-| Utterance | Naskah                                                                  | WER    | CER    | STT (s) | LLM (s) | TTS (s) | Total (s) |
-| --------- | ----------------------------------------------------------------------- | ------ | ------ | ------- | ------- | ------- | --------- |
-| audio1    | Aku mau book flight ke Jeddah minggu depan, bisa bantu schedule?        | 1.0826 | 0.5918 | 8.59    | 27.57   | 17.09   | 53.25     |
-| audio2    | Aku butuh travel umrah simple tapi include Madinah visit                | 0.9849 | 0.5420 | 7.17    | 30.52   | 17.30   | 54.98     |
-| audio3    | Can you help aku arrange transport dari Jeddah ke Madinah tomorrow      | 0.4347 | 0.1964 | 6.50    | 29.03   | 17.23   | 52.76     |
-| audio4    | Explain step by step cara apply visa Saudi dengan benar                 | 0.4691 | 0.1889 | 7.00    | 31.00   | 17.17   | 55.17     |
-| audio5    | Ya akhi, uridu book flight ila Jeddah al-usbu'al qadim...               | 1.0384 | 0.5175 | 10.21   | 32.13   | 16.87   | 59.43     |
-| audio6    | Uridu arrange transport min Jeddah ila Madinah ghadan                   | 0.8125 | 0.2602 | 6.92    | 29.90   | 17.17   | 53.99     |
-| audio7    | Book flight ke Jeddah lalu lanjut ke Madinah, schedule terbaik kapan    | 0.6150 | 0.3100 | 26.93   | 31.66   | 18.35   | 76.95     |
-| audio8    | Arid schedule trip min jeddah ila makkah bukra sabah                    | 1.0972 | 0.7812 | 6.00    | 28.89   | 19.65   | 54.54     |
-| audio9    | Mumkin book transport min makkah ila madinah untuk besok                | 1.1975 | 0.8175 | 5.94    | 30.68   | 18.86   | 55.48     |
-| audio10   | Apa perbedaan umrah dan hajj secara detail dalam Islam                  | 1.2778 | 0.8093 | 5.37    | 35.13   | 18.81   | 59.31     |
-| audio11   | Kenapa fasting di ramadan itu wajib bagi muslim                         | 1.0750 | 0.6266 | 6.41    | 36.96   | 18.03   | 61.40     |
-| audio12   | Bagaimana proses visa Saudi untuk umrah dari Indonesia sekarang         | 1.0688 | 0.6723 | 7.76    | 28.97   | 17.62   | 54.36     |
-| audio13   | Jelaskan step by step cara booking flight ke Jeddah secara online       | 0.7438 | 0.5035 | 6.21    | 32.45   | 18.22   | 56.88     |
-| audio14   | How to prepare dokumen umrah dari Indonesia dengan benar                | 0.6111 | 0.3850 | 6.64    | 38.57   | 17.37   | 62.58     |
-| audio15   | Tolong buat checklist persiapan umrah termasuk barang wajib dibawa      | 1.3426 | 0.6547 | 9.91    | 26.26   | 16.96   | 53.14     |
-| audio16   | Guide aku cara pilih hotel di Makkah dekat Haram dengan budget terbatas | 0.9375 | 0.5669 | 5.32    | 33.09   | 20.85   | 59.27     |
-| audio17   | Menurut kamu belajar bahasa Arab itu susah gak untuk pemula             | 1.1565 | 0.7653 | 7.35    | 27.15   | 17.28   | 51.78     |
-| audio18   | I feel overwhelmed dengan persiapan umrah, ada tips sederhana?          | 1.1358 | 0.6288 | 8.59    | 26.96   | 16.54   | 52.10     |
-| audio19   | Ahyanan saya bingung mulai dari mana untuk umrah                        | 1.1250 | 0.5521 | 5.09    | 30.70   | 17.99   | 53.77     |
-| audio20   | Translate ke English: aku mau pergi ke Makkah minggu depan              | 0.9000 | 0.4589 | 5.42    | 56.55   | 17.58   | 79.55     |
+| Utterance | Naskah                                                                  | WER    | CER    | STT (s) | LLM (s)  | TTS (s) | Total (s) |
+| --------- | ----------------------------------------------------------------------- | ------ | ------ | ------- | -------- | ------- | --------- |
+| audio1    | Aku mau book flight ke Jeddah minggu depan, bisa bantu schedule?        | 0.0545 | 0.0185 | 1.6473  | 45.2836  | 17.6740 | 64.6052   |
+| audio2    | Aku butuh travel umrah simple tapi include Madinah visit                | 0.2081 | 0.0841 | 1.6005  | 60.9860  | 17.1656 | 79.7525   |
+| audio3    | Can you help aku arrange transport dari Jeddah ke Madinah tomorrow      | 0.0711 | 0.0355 | 1.6242  | 45.5986  | 17.4556 | 64.6793   |
+| audio4    | Explain step by step cara apply visa Saudi dengan benar                 | 0.2018 | 0.0575 | 1.5842  | 44.9230  | 18.4025 | 64.9096   |
+| audio5    | Ya akhi, uridu book flight ila Jeddah al-usbu'al qadim...               | 0.6344 | 0.2064 | 2.0983  | 69.7495  | 17.6762 | 89.5240   |
+| audio6    | Uridu arrange transport min Jeddah ila Madinah ghadan                   | 0.6273 | 0.1633 | 1.6990  | 51.8584  | 17.0964 | 70.6546   |
+| audio7    | Book flight ke Jeddah lalu lanjut ke Madinah, schedule terbaik kapan    | 0.0331 | 0.0158 | 1.6792  | 140.2009 | 17.4991 | 159.3792  |
+| audio8    | Arid schedule trip min jeddah ila makkah bukra sabah                    | 0.8519 | 0.6122 | 1.8425  | 47.0408  | 19.3425 | 68.2283   |
+| audio9    | Mumkin book transport min makkah ila madinah untuk besok                | 0.6825 | 0.4974 | 1.6621  | 43.1271  | 20.2214 | 65.0114   |
+| audio10   | Apa perbedaan umrah dan hajj secara detail dalam Islam                  | 0.3450 | 0.2193 | 1.7637  | 49.2947  | 19.0045 | 70.0637   |
+| audio11   | Kenapa fasting di ramadan itu wajib bagi muslim                         | 0.1812 | 0.0394 | 1.7748  | 37.2987  | 17.8612 | 56.9365   |
+| audio12   | Bagaimana proses visa Saudi untuk umrah dari Indonesia sekarang         | 0.1161 | 0.0274 | 1.5173  | 60.8382  | 17.1330 | 79.4875   |
+| audio13   | Jelaskan step by step cara booking flight ke Jeddah secara online       | 0.1186 | 0.0214 | 1.6580  | 41.9057  | 17.9996 | 61.5637   |
+| audio14   | How to prepare dokumen umrah dari Indonesia dengan benar                | 0.1600 | 0.0550 | 1.5012  | 56.3172  | 17.4524 | 75.2694   |
+| audio15   | Tolong buat checklist persiapan umrah termasuk barang wajib dibawa      | 0.2824 | 0.0423 | 1.6583  | 40.9208  | 17.8940 | 60.4731   |
+| audio16   | Guide aku cara pilih hotel di Makkah dekat Haram dengan budget terbatas | 0.2188 | 0.0880 | 1.4312  | 49.1912  | 17.8925 | 68.5169   |
+| audio17   | Menurut kamu belajar bahasa Arab itu susah gak untuk pemula             | 0.1750 | 0.0487 | 1.5450  | 46.3165  | 17.4854 | 65.3463   |
+| audio18   | I feel overwhelmed dengan persiapan umrah, ada tips sederhana?          | 0.1481 | 0.0574 | 1.7328  | 45.5856  | 16.9300 | 64.2500   |
+| audio19   | Ahyanan saya bingung mulai dari mana untuk umrah                        | 0.2321 | 0.0357 | 1.3414  | 52.2814  | 20.6200 | 74.2421   |
+| audio20   | Translate ke English: aku mau pergi ke Makkah minggu depan              | 0.2750 | 0.2061 | 1.5237  | 54.1725  | 18.2487 | 73.9463   |
 
 ## 🔊 Contoh Output Audio
 
 | Mode      | Link                                                                                            |
 | --------- | ----------------------------------------------------------------------------------------------- |
-| Normalize | [Dengarkan](https://drive.google.com/file/d/1Iu6R-zZ_ZSZOCsk6-1xVT6o4G7aC6QOV/view?usp=sharing) |
-| Preserve  | [Dengarkan](https://drive.google.com/file/d/1Va4LPTU3GqB6f5vjNBvhNZkp8mI2dBrA/view?usp=sharing) |
+| Normalize | [Dengarkan](https://drive.google.com/file/d/1AQC9e2swmO-nz69rr6Q1Xlwf2PbUg2Mo/view?usp=sharing) |
+| Preserve  | [Dengarkan](https://drive.google.com/file/d/1xs7oR8Kdlvb64cAZouN5FOLCzj5wvzJi/view?usp=sharing) |
 
 ## 👨‍💻 Dibuat Untuk
 

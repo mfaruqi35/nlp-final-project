@@ -32,10 +32,13 @@ def clean_text(text):
 
 # Checkpoint agar progres tidak ulang dari awal saat program dihentikan tengah jalan
 def load_checkpoint():
-    if os.path.exists(CHECKPOINT_FILE):
+    try:
+        if os.path.getsize(CHECKPOINT_FILE) == 0:
+            return []
         with open(CHECKPOINT_FILE, "r", encoding="utf-8") as f:
             return json.load(f)
-    return []
+    except json.JSONDecodeError:
+        return []
 
 # Menyimpan checkpoint
 def save_checkpoint(results):

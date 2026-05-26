@@ -82,8 +82,8 @@ def _expand_acronym(text: str) -> str:
     Contoh: KSA -> ke es a, PBB -> pe be be
     """
     vowel_map = {
-        'a': 'a', 'b': 'be', 'c': 'ce', 'd': 'de', 'e': 'e',
-        'f': 'ef', 'g': 'ge', 'h': 'ha', 'i': 'i', 'j': 'je',
+        'a': 'aa', 'b': 'be', 'c': 'ce', 'd': 'de', 'e': 'e',
+        'f': 'ef', 'g': 'ge', 'h': 'ha', 'i': 'ii', 'j': 'je',
         'k': 'ka', 'l': 'el', 'm': 'em', 'n': 'en', 'o': 'o',
         'p': 'pe', 'q': 'ki', 'r': 'er', 's': 'es', 't': 'te',
         'u': 'u', 'v': 'fe', 'w': 'we', 'x': 'eks', 'y': 'ye',
@@ -112,15 +112,26 @@ def _normalize_tts_text(text: str) -> str:
     # 1. Bersihkan simbol Markdown/noise dari LLM (*, _, ~, dll)
     spoken_text = re.sub(r'[\*\_\~\"\']', '', spoken_text)
     
-    for word, replacement in ENGLISH_WORDS.items():
-        spoken_text = re.sub(rf'\b{word}\b', replacement, spoken_text)
+    english_phrases = re.findall(r'<en>(.*?)</en>', spoken_text)
+    for phrase in english_phrases:
+        normalized_phrase = phrase
+        for word, replacement in ENGLISH_WORDS.items():
+            normalized_phrase = re.sub(rf'\b{word}\b', replacement, normalized_phrase)
+        normalized_phrase = re.sub(r'\bc(?=[aourl])', 'k', normalized_phrase)
+        spoken_text = spoken_text.replace(f"<en>{phrase}</en>", normalized_phrase)
 
-    # 2. Aturan Fonetik Konsonan Mati (Devoicing)
+    spoken_text = re.sub(r'</?en>', '', spoken_text)
+    spoken_text = re.sub(r'</?ar>', '', spoken_text)
+    spoken_text = re.sub(r'<[^>]+>', '', spoken_text)
+
     spoken_text = re.sub(r'd\b', 't', spoken_text)
     spoken_text = re.sub(r'b\b', 'p', spoken_text)
     spoken_text = re.sub(r'est\b', 'es', spoken_text)
     spoken_text = re.sub(r'eck\b', 'ek', spoken_text)
+    spoken_text = re.sub(r'ngle\b', 'nggel', spoken_text)
+    spoken_text = re.sub(r'le\b', 'el', spoken_text)
     spoken_text = re.sub(r'ch\b', 'c', spoken_text)
+    spoken_text = re.sub(r'tion\b', 'syen', spoken_text)
 
 
     return spoken_text
@@ -152,7 +163,7 @@ def _grapheme_to_phoneme(text: str) -> str:
             'ny': 'ɲ',
             'sy': 'ʃ',
             'kh': 'x',
-            'c': 'tʃ',
+            'c': 'tʃh',
             'j': 'dʒ',
             'y': 'j',
             'g': 'ɡ',

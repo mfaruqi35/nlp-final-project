@@ -21,6 +21,11 @@ else:
 
 WHISPER_MODEL_PATH = os.path.join(WHISPER_DIR, "models", "ggml-base.bin")
 
+initial_prompt = (
+    "Ya akhi, saya mau book flight, arrange transport, dan check schedule travel ke Jeddah, "
+    "Makkah, dan Madinah untuk persiapan ibadah umrah dan hajj besok pagi."
+)
+
 def transcribe_speech_to_text(file_bytes: bytes, file_ext: str = ".wav") -> str:
     """
     Transkrip file audio menggunakan whisper.cpp CLI
@@ -41,6 +46,8 @@ def transcribe_speech_to_text(file_bytes: bytes, file_ext: str = ".wav") -> str:
             WHISPER_BINARY,
             "-m", WHISPER_MODEL_PATH,
             "-f", audio_path,
+            "-l", "id",
+            "--prompt", initial_prompt,
             "-otxt",
             "-of", os.path.join(tmpdir, "transcription")
         ]
