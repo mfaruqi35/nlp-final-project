@@ -98,7 +98,7 @@ voice_chatbot_project/
 ## 📚 Catatan
 
 - Semua file audio sudah diconvert ke format `.wav`.
-- Model whisper yang dipakai pada percobaan ini adalah `ggml-base` **dengan** initial prompt dan flag `-id`.
+- Model whisper yang dipakai pada percobaan ini adalah `ggml-base` **dengan** initial prompt dan flag `-l id`.
 - Speaker yang dipakai pada percobaan ini adalah `wibowo` dari coqui TTS.
 - Percobaan dilakukan tanpa menggunakan GPU.
 
