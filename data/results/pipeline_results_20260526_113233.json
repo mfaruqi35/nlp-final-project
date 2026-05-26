@@ -1,0 +1,170 @@
+{
+  "summary": {
+    "total_files": 561,
+    "average_wer": 0.2604,
+    "average_cer": 0.0903,
+    "average_latency": 75.72
+  },
+  "summary_per_utterance": {
+    "audio5": {
+      "wer": 0.6344,
+      "cer": 0.2064,
+      "stt_latency": 2.0983,
+      "llm_latency": 69.7495,
+      "tts_latency": 17.6762,
+      "total_latency": 89.524
+    },
+    "audio6": {
+      "wer": 0.6273,
+      "cer": 0.1633,
+      "stt_latency": 1.699,
+      "llm_latency": 51.8584,
+      "tts_latency": 17.0964,
+      "total_latency": 70.6546
+    },
+    "audio1": {
+      "wer": 0.0545,
+      "cer": 0.0185,
+      "stt_latency": 1.6473,
+      "llm_latency": 45.2836,
+      "tts_latency": 17.674,
+      "total_latency": 64.6052
+    },
+    "audio12": {
+      "wer": 0.1161,
+      "cer": 0.0274,
+      "stt_latency": 1.5173,
+      "llm_latency": 60.8382,
+      "tts_latency": 17.133,
+      "total_latency": 79.4875
+    },
+    "audio13": {
+      "wer": 0.1186,
+      "cer": 0.0214,
+      "stt_latency": 1.658,
+      "llm_latency": 41.9057,
+      "tts_latency": 17.9996,
+      "total_latency": 61.5637
+    },
+    "audio14": {
+      "wer": 0.16,
+      "cer": 0.055,
+      "stt_latency": 1.5012,
+      "llm_latency": 56.3172,
+      "tts_latency": 17.4524,
+      "total_latency": 75.2694
+    },
+    "audio16": {
+      "wer": 0.2188,
+      "cer": 0.088,
+      "stt_latency": 1.4312,
+      "llm_latency": 49.1912,
+      "tts_latency": 17.8925,
+      "total_latency": 68.5169
+    },
+    "audio2": {
+      "wer": 0.2081,
+      "cer": 0.0841,
+      "stt_latency": 1.6005,
+      "llm_latency": 60.986,
+      "tts_latency": 17.1656,
+      "total_latency": 79.7525
+    },
+    "audio3": {
+      "wer": 0.0711,
+      "cer": 0.0355,
+      "stt_latency": 1.6242,
+      "llm_latency": 45.5986,
+      "tts_latency": 17.4556,
+      "total_latency": 64.6793
+    },
+    "audio4": {
+      "wer": 0.2018,
+      "cer": 0.0575,
+      "stt_latency": 1.5842,
+      "llm_latency": 44.923,
+      "tts_latency": 18.4025,
+      "total_latency": 64.9096
+    },
+    "audio10": {
+      "wer": 0.345,
+      "cer": 0.2193,
+      "stt_latency": 1.7637,
+      "llm_latency": 49.2947,
+      "tts_latency": 19.0045,
+      "total_latency": 70.0637
+    },
+    "audio7": {
+      "wer": 0.0331,
+      "cer": 0.0158,
+      "stt_latency": 1.6792,
+      "llm_latency": 140.2009,
+      "tts_latency": 17.4991,
+      "total_latency": 159.3792
+    },
+    "audio11": {
+      "wer": 0.1812,
+      "cer": 0.0394,
+      "stt_latency": 1.7748,
+      "llm_latency": 37.2987,
+      "tts_latency": 17.8612,
+      "total_latency": 56.9365
+    },
+    "audio15": {
+      "wer": 0.2824,
+      "cer": 0.0423,
+      "stt_latency": 1.6583,
+      "llm_latency": 40.9208,
+      "tts_latency": 17.894,
+      "total_latency": 60.4731
+    },
+    "audio17": {
+      "wer": 0.175,
+      "cer": 0.0487,
+      "stt_latency": 1.545,
+      "llm_latency": 46.3165,
+      "tts_latency": 17.4854,
+      "total_latency": 65.3463
+    },
+    "audio19": {
+      "wer": 0.2321,
+      "cer": 0.0357,
+      "stt_latency": 1.3414,
+      "llm_latency": 52.2814,
+      "tts_latency": 20.62,
+      "total_latency": 74.2421
+    },
+    "audio18": {
+      "wer": 0.1481,
+      "cer": 0.0574,
+      "stt_latency": 1.7328,
+      "llm_latency": 45.5856,
+      "tts_latency": 16.93,
+      "total_latency": 64.25
+    },
+    "audio8": {
+      "wer": 0.8519,
+      "cer": 0.6122,
+      "stt_latency": 1.8425,
+      "llm_latency": 47.0408,
+      "tts_latency": 19.3425,
+      "total_latency": 68.2283
+    },
+    "audio20": {
+      "wer": 0.275,
+      "cer": 0.2061,
+      "stt_latency": 1.5237,
+      "llm_latency": 54.1725,
+      "tts_latency": 18.2487,
+      "total_latency": 73.9463
+    },
+    "audio9": {
+      "wer": 0.6825,
+      "cer": 0.4974,
+      "stt_latency": 1.6621,
+      "llm_latency": 43.1271,
+      "tts_latency": 20.2214,
+      "total_latency": 65.0114
+    }
+  }
+}
